@@ -1,0 +1,12 @@
+<resources>
+    <style name="Theme.WebCellularApplication" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/salmon</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimaryContainer">@color/salmon</item>
+        <item name="colorOnPrimaryContainer">@color/white</item>
+        <item name="colorSecondary">@color/salmon</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="android:windowBackground">@color/background_light</item>
+        <item name="android:navigationBarColor">@color/white</item>
+    </style>
+</resources>
