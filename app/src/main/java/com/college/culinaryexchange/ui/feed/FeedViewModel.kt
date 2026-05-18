@@ -86,9 +86,12 @@ class FeedViewModel(app: Application) : AndroidViewModel(app) {
 
     fun setSortOrder(order: SortOrder) { _sortOrder.value = order }
     fun setCategory(category: String) { _selectedCategory.value = category }
+    fun setSearchQuery(query: String) { _searchQuery.value = query }
+    fun clearSearch() { _searchQuery.value = "" }
     fun resetFilters() {
         _sortOrder.value = SortOrder.NEWEST_FIRST
         _selectedCategory.value = "All"
+        _searchQuery.value = ""
     }
 
     fun loadPosts() {
