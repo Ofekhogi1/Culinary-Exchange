@@ -44,8 +44,8 @@ class AuthRepository {
         val stream = context.contentResolver.openInputStream(uri)
             ?: throw IOException("Cannot open avatar URI: $uri")
         val ref = storage.reference.child("avatars/${UUID.randomUUID()}")
-        stream.use { ref.putStream(it).await() }
-        return ref.downloadUrl.await().toString()
+        val snapshot = stream.use { ref.putStream(it).await() }
+        return snapshot.storage.downloadUrl.await().toString()
     }
 
     fun logout() = auth.signOut()

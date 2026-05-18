@@ -58,8 +58,8 @@ class PostRepository(private val postDao: PostDao, private val context: Context)
         val stream = context.contentResolver.openInputStream(uri)
             ?: throw IOException("Cannot open image URI: $uri")
         val ref = storage.reference.child("posts/${UUID.randomUUID()}")
-        stream.use { ref.putStream(it).await() }
-        return ref.downloadUrl.await().toString()
+        val snapshot = stream.use { ref.putStream(it).await() }
+        return snapshot.storage.downloadUrl.await().toString()
     }
 
     private fun Post.toEntity() = PostEntity(

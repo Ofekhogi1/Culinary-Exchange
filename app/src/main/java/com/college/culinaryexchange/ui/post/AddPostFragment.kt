@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.widget.ImageViewCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -36,8 +37,8 @@ class AddPostFragment : Fragment() {
     private val pickImage = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         uri?.let {
             selectedImageUri = it
-            binding.ivPostImage.setImageURI(it)
-            binding.ivPostImage.clearColorFilter()
+            Glide.with(this).load(it).centerCrop().into(binding.ivPostImage)
+            ImageViewCompat.setImageTintList(binding.ivPostImage, null)
         }
     }
 
@@ -65,8 +66,8 @@ class AddPostFragment : Fragment() {
                 binding.etPrepTime.setText(if (post.prepTime > 0) post.prepTime.toString() else "")
                 binding.etServings.setText(if (post.servings > 0) post.servings.toString() else "")
                 if (post.imageUrl.isNotBlank()) {
-                    Glide.with(this).load(post.imageUrl).into(binding.ivPostImage)
-                    binding.ivPostImage.clearColorFilter()
+                    Glide.with(this).load(post.imageUrl).centerCrop().into(binding.ivPostImage)
+                    ImageViewCompat.setImageTintList(binding.ivPostImage, null)
                 }
                 ingredients.clear()
                 ingredients.addAll(post.ingredients)
