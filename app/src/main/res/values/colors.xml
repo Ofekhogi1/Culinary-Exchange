@@ -1,18 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <!-- Primary Brand Colors -->
+    <color name="primary">#FF6B6B</color>
+    <color name="primary_dark">#EE5A6F</color>
+    <color name="primary_light">#FF8989</color>
 
-    <color name="salmon">#E07070</color>
-    <color name="salmon_dark">#C85A5A</color>
-    <color name="background_light">#F8F8F8</color>
-    <color name="text_primary">#1C1C1C</color>
-    <color name="text_secondary">#666666</color>
-    <color name="card_background">#FFFFFF</color>
-    <color name="border_color">#E0E0E0</color>
+    <!-- Gradient Colors -->
+    <color name="gradient_start">#FF6B6B</color>
+    <color name="gradient_end">#EE5A6F</color>
+
+    <!-- Background Colors -->
+    <color name="background">#FAFAFA</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="surface_variant">#F0F0F0</color>
+
+    <!-- Text Colors -->
+    <color name="on_primary">#FFFFFF</color>
+    <color name="on_surface">#000000</color>
+    <color name="text_primary">#212121</color>
+    <color name="text_secondary">#717182</color>
+    <color name="text_hint">#9E9E9E</color>
+
+    <!-- Border & Divider Colors -->
+    <color name="border">#E0E0E0</color>
+    <color name="divider">#E0E0E0</color>
+
+    <!-- Input / Surface Tones -->
+    <color name="input_background">#F3F3F5</color>
+    <color name="stats_background">#F5F5F5</color>
+
+    <!-- Transparent Overlays -->
+    <color name="shadow">#14000000</color>
+    <color name="hover_overlay">#0A000000</color>
+
+    <!-- Status Colors -->
+    <color name="error">#D32F2F</color>
+    <color name="success">#388E3C</color>
+    <color name="warning">#F57C00</color>
+
+    <!-- System Colors -->
+    <color name="transparent">#00000000</color>
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
+
+    <!-- Legacy aliases (keep existing layout references working) -->
+    <color name="salmon">@color/primary</color>
+    <color name="salmon_dark">@color/primary_dark</color>
+    <color name="background_light">@color/background</color>
+    <color name="card_background">@color/surface</color>
+    <color name="border_color">@color/border</color>
 </resources>

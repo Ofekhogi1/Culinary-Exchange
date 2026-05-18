@@ -26,6 +26,10 @@ class MyPostsFragment : Fragment() {
 
         val adapter = PostAdapter(
             showActions = true,
+            onItemClick = { post ->
+                val action = MyPostsFragmentDirections.actionMyPostsToRecipeDetail(postId = post.id)
+                findNavController().navigate(action)
+            },
             onEdit = { post ->
                 val action = MyPostsFragmentDirections.actionMyPostsToAddPost(postId = post.id)
                 findNavController().navigate(action)

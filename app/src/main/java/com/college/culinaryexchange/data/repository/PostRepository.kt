@@ -21,8 +21,14 @@ class PostRepository(private val postDao: PostDao) {
     fun getUserPostsFromCache(userId: String): Flow<List<PostEntity>> =
         postDao.getPostsByUser(userId)
 
+    fun getPostById(id: String): Flow<PostEntity?> = postDao.getPostById(id)
+
+    fun getUserPostCount(userId: String): Flow<Int> = postDao.getPostCountByUser(userId)
+
     suspend fun refreshAllPosts() {
-        val snapshot = postsCollection.orderBy("timestamp", com.google.firebase.firestore.Query.Direction.DESCENDING).get().await()
+        val snapshot = postsCollection
+            .orderBy("timestamp", com.google.firebase.firestore.Query.Direction.DESCENDING)
+            .get().await()
         val posts = snapshot.toObjects(Post::class.java)
         postDao.upsertAll(posts.map { it.toEntity() })
     }
@@ -55,6 +61,10 @@ class PostRepository(private val postDao: PostDao) {
     private fun Post.toEntity() = PostEntity(
         id = id, userId = userId, userName = userName,
         userAvatarUrl = userAvatarUrl, title = title,
-        description = description, imageUrl = imageUrl, timestamp = timestamp
+        description = description, imageUrl = imageUrl, timestamp = timestamp,
+        ingredients = ingredients, instructions = instructions,
+        prepTime = prepTime, servings = servings, category = category,
+        nutritionCalories = nutritionCalories, nutritionProtein = nutritionProtein,
+        nutritionCarbs = nutritionCarbs, nutritionFat = nutritionFat
     )
 }

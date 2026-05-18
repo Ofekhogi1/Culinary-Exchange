@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.college.culinaryexchange.databinding.FragmentHomeBinding
@@ -29,7 +30,12 @@ class HomeFragment : Fragment() {
             quote = viewModel.currentQuote.value ?: Quote("", ""),
             onRefresh = { viewModel.refreshQuote() }
         )
-        val postAdapter = PostAdapter()
+        val postAdapter = PostAdapter(
+            onItemClick = { post ->
+                val action = HomeFragmentDirections.actionHomeToRecipeDetail(postId = post.id)
+                findNavController().navigate(action)
+            }
+        )
 
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.adapter = ConcatAdapter(quoteAdapter, postAdapter)
@@ -38,7 +44,7 @@ class HomeFragment : Fragment() {
             quoteAdapter.updateQuote(quote)
         }
 
-        viewModel.posts.observe(viewLifecycleOwner) { posts ->
+        viewModel.filteredPosts.observe(viewLifecycleOwner) { posts ->
             postAdapter.submitList(posts)
         }
 

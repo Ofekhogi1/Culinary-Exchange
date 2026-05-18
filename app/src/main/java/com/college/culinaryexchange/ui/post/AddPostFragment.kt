@@ -12,9 +12,11 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
+import com.college.culinaryexchange.R
 import com.college.culinaryexchange.data.local.entity.PostEntity
 import com.college.culinaryexchange.databinding.FragmentAddPostBinding
 import com.college.culinaryexchange.model.Post
+import com.google.android.material.chip.Chip
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -28,10 +30,14 @@ class AddPostFragment : Fragment() {
     private var selectedImageUri: Uri? = null
     private var existingPost: PostEntity? = null
 
+    private val ingredients = mutableListOf<String>()
+    private val instructions = mutableListOf<String>()
+
     private val pickImage = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         uri?.let {
             selectedImageUri = it
             binding.ivPostImage.setImageURI(it)
+            binding.ivPostImage.clearColorFilter()
         }
     }
 
@@ -46,7 +52,8 @@ class AddPostFragment : Fragment() {
         val postId = args.postId
         val isEditMode = postId != null
 
-        binding.btnSubmit.text = if (isEditMode) "Update" else "Post"
+        binding.tvTitle.text = if (isEditMode) "Edit Recipe" else "New Recipe"
+        binding.btnSubmit.text = if (isEditMode) "Update Recipe" else "Create Recipe"
 
         if (isEditMode) {
             viewModel.loadPostForEdit(postId!!)
@@ -55,19 +62,59 @@ class AddPostFragment : Fragment() {
                 existingPost = post
                 binding.etTitle.setText(post.title)
                 binding.etDescription.setText(post.description)
+                binding.etPrepTime.setText(if (post.prepTime > 0) post.prepTime.toString() else "")
+                binding.etServings.setText(if (post.servings > 0) post.servings.toString() else "")
                 if (post.imageUrl.isNotBlank()) {
                     Glide.with(this).load(post.imageUrl).into(binding.ivPostImage)
+                    binding.ivPostImage.clearColorFilter()
                 }
+                ingredients.clear()
+                ingredients.addAll(post.ingredients)
+                post.ingredients.forEach { addIngredientChip(it) }
+
+                instructions.clear()
+                instructions.addAll(post.instructions)
+                post.instructions.forEachIndexed { index, text -> addInstructionStep(index + 1, text) }
             }
         }
 
+        binding.btnBack.setOnClickListener { findNavController().popBackStack() }
         binding.btnPickImage.setOnClickListener { pickImage.launch("image/*") }
+
+        binding.btnAddIngredient.setOnClickListener {
+            val text = binding.etIngredient.text.toString().trim()
+            if (text.isNotEmpty()) {
+                ingredients.add(text)
+                addIngredientChip(text)
+                binding.etIngredient.text?.clear()
+            }
+        }
+
+        binding.btnAddInstruction.setOnClickListener {
+            val text = binding.etInstruction.text.toString().trim()
+            if (text.isNotEmpty()) {
+                instructions.add(text)
+                addInstructionStep(instructions.size, text)
+                binding.etInstruction.text?.clear()
+            }
+        }
 
         binding.btnSubmit.setOnClickListener {
             val title = binding.etTitle.text.toString().trim()
             val description = binding.etDescription.text.toString().trim()
+            val prepTime = binding.etPrepTime.text.toString().trim().toIntOrNull() ?: 0
+            val servings = binding.etServings.text.toString().trim().toIntOrNull() ?: 0
+
             if (title.isBlank()) {
                 Toast.makeText(requireContext(), "Title is required", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            if (ingredients.isEmpty()) {
+                Toast.makeText(requireContext(), "Add at least one ingredient", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            if (instructions.isEmpty()) {
+                Toast.makeText(requireContext(), "Add at least one instruction step", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
@@ -81,12 +128,25 @@ class AddPostFragment : Fragment() {
                     title = title,
                     description = description,
                     imageUrl = existing.imageUrl,
-                    timestamp = existing.timestamp
+                    timestamp = existing.timestamp,
+                    ingredients = ingredients.toList(),
+                    instructions = instructions.toList(),
+                    prepTime = prepTime,
+                    servings = servings
                 )
                 viewModel.updatePost(updatedPost, selectedImageUri)
             } else {
                 resolveUserName { userName ->
-                    viewModel.createPost(title, description, userName, selectedImageUri)
+                    viewModel.createPost(
+                        title = title,
+                        description = description,
+                        userName = userName,
+                        imageUri = selectedImageUri,
+                        ingredients = ingredients.toList(),
+                        instructions = instructions.toList(),
+                        prepTime = prepTime,
+                        servings = servings
+                    )
                 }
             }
         }
@@ -102,16 +162,52 @@ class AddPostFragment : Fragment() {
         }
     }
 
+    private fun addIngredientChip(text: String) {
+        val chip = Chip(requireContext()).apply {
+            this.text = text
+            isCloseIconVisible = true
+            setOnCloseIconClickListener {
+                ingredients.remove(text)
+                binding.chipGroupIngredients.removeView(this)
+            }
+        }
+        binding.chipGroupIngredients.addView(chip)
+    }
+
+    private fun addInstructionStep(number: Int, text: String) {
+        val row = LayoutInflater.from(requireContext())
+            .inflate(R.layout.item_instruction_step, binding.llInstructionSteps, false)
+
+        val tvNumber = row.findViewById<android.widget.TextView>(R.id.tvStepNumber)
+        val tvText = row.findViewById<android.widget.TextView>(R.id.tvStepText)
+        val btnRemove = row.findViewById<android.widget.ImageView>(R.id.btnRemoveStep)
+
+        tvNumber.text = number.toString()
+        tvText.text = text
+        btnRemove.setOnClickListener {
+            val idx = instructions.indexOf(text)
+            if (idx >= 0) instructions.removeAt(idx)
+            binding.llInstructionSteps.removeView(row)
+            renumberSteps()
+        }
+
+        binding.llInstructionSteps.addView(row)
+    }
+
+    private fun renumberSteps() {
+        for (i in 0 until binding.llInstructionSteps.childCount) {
+            val row = binding.llInstructionSteps.getChildAt(i)
+            row.findViewById<android.widget.TextView>(R.id.tvStepNumber)?.text = (i + 1).toString()
+        }
+    }
+
     private fun resolveUserName(onResolved: (String) -> Unit) {
         val uid = FirebaseAuth.getInstance().currentUser?.uid ?: run {
             onResolved("Anonymous")
             return
         }
         FirebaseFirestore.getInstance().collection("users").document(uid).get()
-            .addOnSuccessListener { doc ->
-                val name = doc.getString("name") ?: "Anonymous"
-                onResolved(name)
-            }
+            .addOnSuccessListener { doc -> onResolved(doc.getString("name") ?: "Anonymous") }
             .addOnFailureListener { onResolved("Anonymous") }
     }
 

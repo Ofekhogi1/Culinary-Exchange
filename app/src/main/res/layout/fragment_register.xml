@@ -31,7 +31,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Create Account"
+            android:text="CulinaryExchange"
             android:textColor="@color/text_primary"
             android:textSize="28sp"
             android:textStyle="bold"
@@ -40,17 +40,21 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Join the culinary community"
+            android:text="Share and discover recipes from chefs worldwide"
             android:textColor="@color/text_secondary"
-            android:textSize="15sp"
+            android:textSize="14sp"
+            android:gravity="center"
             android:layout_marginBottom="32dp" />
 
+        <!-- Form Card -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="@color/white">
+            app:cardCornerRadius="@dimen/card_corner_radius"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@color/white"
+            app:strokeColor="@color/border"
+            app:strokeWidth="1dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -58,119 +62,101 @@
                 android:orientation="vertical"
                 android:padding="24dp">
 
+                <!-- Full Name -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Name"
+                    android:text="Full Name"
                     android:textColor="@color/text_primary"
                     android:textSize="14sp"
-                    android:layout_marginBottom="8dp" />
+                    android:textStyle="bold"
+                    android:layout_marginBottom="6dp" />
 
-                <LinearLayout
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:background="@drawable/bg_input_field"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:paddingHorizontal="16dp"
-                    android:layout_marginBottom="20dp">
-                    <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:src="@android:drawable/ic_menu_myplaces"
-                        android:layout_marginEnd="12dp" />
-                    <EditText
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    style="@style/Widget.CulinaryExchange.TextInputLayout"
+                    app:hintEnabled="false"
+                    app:startIconDrawable="@drawable/ic_person"
+                    app:startIconTint="@color/text_secondary">
+                    <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etName"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:background="@null"
-                        android:hint="Your full name"
-                        android:textColorHint="@color/text_secondary"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Your name"
                         android:inputType="textPersonName"
                         android:textSize="15sp"
                         android:textColor="@color/text_primary" />
-                </LinearLayout>
+                </com.google.android.material.textfield.TextInputLayout>
 
+                <!-- Email -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Email"
                     android:textColor="@color/text_primary"
                     android:textSize="14sp"
-                    android:layout_marginBottom="8dp" />
+                    android:textStyle="bold"
+                    android:layout_marginBottom="6dp" />
 
-                <LinearLayout
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:background="@drawable/bg_input_field"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:paddingHorizontal="16dp"
-                    android:layout_marginBottom="20dp">
-                    <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:src="@android:drawable/ic_dialog_email"
-                        android:layout_marginEnd="12dp" />
-                    <EditText
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    style="@style/Widget.CulinaryExchange.TextInputLayout"
+                    app:hintEnabled="false"
+                    app:startIconDrawable="@drawable/ic_email"
+                    app:startIconTint="@color/text_secondary">
+                    <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etEmail"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:background="@null"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:hint="you@example.com"
-                        android:textColorHint="@color/text_secondary"
                         android:inputType="textEmailAddress"
                         android:textSize="15sp"
                         android:textColor="@color/text_primary" />
-                </LinearLayout>
+                </com.google.android.material.textfield.TextInputLayout>
 
+                <!-- Password -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Password"
                     android:textColor="@color/text_primary"
                     android:textSize="14sp"
-                    android:layout_marginBottom="8dp" />
+                    android:textStyle="bold"
+                    android:layout_marginBottom="6dp" />
 
-                <LinearLayout
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:background="@drawable/bg_input_field"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:paddingHorizontal="16dp"
-                    android:layout_marginBottom="28dp">
-                    <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:src="@android:drawable/ic_lock_idle_lock"
-                        android:layout_marginEnd="12dp" />
-                    <EditText
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="28dp"
+                    style="@style/Widget.CulinaryExchange.TextInputLayout"
+                    app:hintEnabled="false"
+                    app:startIconDrawable="@drawable/ic_lock"
+                    app:startIconTint="@color/text_secondary"
+                    app:endIconMode="password_toggle">
+                    <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etPassword"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:background="@null"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:hint="••••••••"
-                        android:textColorHint="@color/text_secondary"
                         android:inputType="textPassword"
                         android:textSize="15sp"
                         android:textColor="@color/text_primary" />
-                </LinearLayout>
+                </com.google.android.material.textfield.TextInputLayout>
 
+                <!-- Sign Up Button -->
                 <Button
                     android:id="@+id/btnRegister"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
-                    android:text="Create Account"
+                    android:text="Sign Up"
                     android:textStyle="bold"
-                    android:textSize="16sp"
-                    android:textColor="@color/white"
-                    android:backgroundTint="@color/salmon"
                     android:layout_marginBottom="16dp" />
 
+                <!-- Sign In link -->
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -187,7 +173,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Sign In"
-                        android:textColor="@color/salmon"
+                        android:textColor="@color/primary"
                         android:textSize="14sp"
                         android:textStyle="bold" />
                 </LinearLayout>

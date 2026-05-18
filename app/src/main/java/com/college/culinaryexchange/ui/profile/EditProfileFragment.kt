@@ -1,0 +1,69 @@
+package com.college.culinaryexchange.ui.profile
+
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
+import com.college.culinaryexchange.databinding.FragmentEditProfileBinding
+
+class EditProfileFragment : Fragment() {
+
+    private var _binding: FragmentEditProfileBinding? = null
+    private val binding get() = _binding!!
+    private val viewModel: EditProfileViewModel by viewModels()
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        _binding = FragmentEditProfileBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        viewModel.loadUser()
+
+        binding.btnBack.setOnClickListener { findNavController().popBackStack() }
+
+        viewModel.user.observe(viewLifecycleOwner) { user ->
+            user ?: return@observe
+            binding.etName.setText(user.name)
+            binding.etEmail.setText(user.email)
+            binding.etBio.setText(user.bio)
+            binding.etAvatarUrl.setText(user.avatarUrl)
+            if (user.avatarUrl.isNotBlank()) {
+                Glide.with(this).load(user.avatarUrl).circleCrop().into(binding.ivAvatar)
+            }
+        }
+
+        viewModel.isLoading.observe(viewLifecycleOwner) { loading ->
+            binding.progressBar.visibility = if (loading) View.VISIBLE else View.GONE
+            binding.btnSave.isEnabled = !loading
+        }
+
+        viewModel.operationResult.observe(viewLifecycleOwner) { result ->
+            result.onSuccess { findNavController().popBackStack() }
+                .onFailure { Toast.makeText(requireContext(), it.message ?: "Error saving profile", Toast.LENGTH_LONG).show() }
+        }
+
+        binding.btnSave.setOnClickListener {
+            val name = binding.etName.text.toString()
+            val bio = binding.etBio.text.toString()
+            val avatarUrl = binding.etAvatarUrl.text.toString()
+            if (name.isBlank()) {
+                Toast.makeText(requireContext(), "Name cannot be empty", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            viewModel.saveUser(name, bio, avatarUrl)
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+}

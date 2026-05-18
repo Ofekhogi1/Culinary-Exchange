@@ -3,6 +3,7 @@ package com.college.culinaryexchange.ui.feed
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -13,11 +14,29 @@ import kotlinx.coroutines.launch
 
 data class Quote(val text: String, val author: String)
 
+enum class SortOrder { NEWEST_FIRST, OLDEST_FIRST }
+
 class FeedViewModel(app: Application) : AndroidViewModel(app) {
 
     private val repository = PostRepository(AppDatabase.getInstance(app).postDao())
 
-    val posts: LiveData<List<PostEntity>> = repository.getAllPostsFromCache().asLiveData()
+    private val _allPosts: LiveData<List<PostEntity>> = repository.getAllPostsFromCache().asLiveData()
+    private val _sortOrder = MutableLiveData(SortOrder.NEWEST_FIRST)
+    private val _selectedCategory = MutableLiveData("All")
+
+    val filteredPosts: LiveData<List<PostEntity>> = MediatorLiveData<List<PostEntity>>().apply {
+        fun update() {
+            val posts = _allPosts.value ?: return
+            val sort = _sortOrder.value ?: SortOrder.NEWEST_FIRST
+            val category = _selectedCategory.value ?: "All"
+            val filtered = if (category == "All") posts else posts.filter { it.category == category }
+            value = if (sort == SortOrder.NEWEST_FIRST) filtered.sortedByDescending { it.timestamp }
+                    else filtered.sortedBy { it.timestamp }
+        }
+        addSource(_allPosts) { update() }
+        addSource(_sortOrder) { update() }
+        addSource(_selectedCategory) { update() }
+    }
 
     private val _isLoading = MutableLiveData(false)
     val isLoading: LiveData<Boolean> = _isLoading
@@ -39,6 +58,13 @@ class FeedViewModel(app: Application) : AndroidViewModel(app) {
     fun refreshQuote() {
         quoteIndex = (quoteIndex + 1) % quotes.size
         _currentQuote.value = quotes[quoteIndex]
+    }
+
+    fun setSortOrder(order: SortOrder) { _sortOrder.value = order }
+    fun setCategory(category: String) { _selectedCategory.value = category }
+    fun resetFilters() {
+        _sortOrder.value = SortOrder.NEWEST_FIRST
+        _selectedCategory.value = "All"
     }
 
     fun loadPosts() {

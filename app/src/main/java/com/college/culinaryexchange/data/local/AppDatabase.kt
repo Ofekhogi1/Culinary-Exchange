@@ -4,10 +4,13 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
+import com.college.culinaryexchange.data.local.converter.Converters
 import com.college.culinaryexchange.data.local.dao.PostDao
 import com.college.culinaryexchange.data.local.entity.PostEntity
 
-@Database(entities = [PostEntity::class], version = 1, exportSchema = true)
+@Database(entities = [PostEntity::class], version = 2, exportSchema = true)
+@TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun postDao(): PostDao
@@ -21,7 +24,7 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "culinary_exchange.db"
-                ).build().also { INSTANCE = it }
+                ).fallbackToDestructiveMigration(true).build().also { INSTANCE = it }
             }
     }
 }

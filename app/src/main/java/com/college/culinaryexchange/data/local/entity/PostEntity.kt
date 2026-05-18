@@ -12,5 +12,14 @@ data class PostEntity(
     val title: String,
     val description: String,
     val imageUrl: String,
-    val timestamp: Long
+    val timestamp: Long,
+    val ingredients: List<String> = emptyList(),
+    val instructions: List<String> = emptyList(),
+    val prepTime: Int = 0,
+    val servings: Int = 0,
+    val category: String = "",
+    val nutritionCalories: Int = 0,
+    val nutritionProtein: String = "",
+    val nutritionCarbs: String = "",
+    val nutritionFat: String = ""
 )

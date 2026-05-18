@@ -25,7 +25,8 @@ class QuoteAdapter(
     inner class ViewHolder(private val binding: ItemQuoteBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(q: Quote) {
-            binding.tvQuote.text = "\"${q.text}\"\n— ${q.author}"
+            binding.tvQuote.text = "\"${q.text}\""
+            binding.tvQuoteAuthor.text = "— ${q.author}"
             binding.ivRefreshQuote.setOnClickListener { onRefresh() }
         }
     }

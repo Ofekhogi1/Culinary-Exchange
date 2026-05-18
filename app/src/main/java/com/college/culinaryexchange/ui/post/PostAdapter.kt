@@ -7,12 +7,14 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.college.culinaryexchange.data.local.entity.PostEntity
 import com.college.culinaryexchange.databinding.ItemPostBinding
 import java.util.concurrent.TimeUnit
 
 class PostAdapter(
     private val showActions: Boolean = false,
+    private val onItemClick: ((PostEntity) -> Unit)? = null,
     private val onEdit: ((PostEntity) -> Unit)? = null,
     private val onDelete: ((PostEntity) -> Unit)? = null
 ) : ListAdapter<PostEntity, PostAdapter.ViewHolder>(DIFF) {
@@ -27,18 +29,28 @@ class PostAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(post: PostEntity) {
+            binding.root.setOnClickListener { onItemClick?.invoke(post) }
             binding.tvUserName.text = post.userName
             binding.tvTitle.text = post.title
             binding.tvDescription.text = post.description
             binding.tvTimestamp.text = getRelativeTime(post.timestamp)
 
+            if (post.userAvatarUrl.isNotBlank()) {
+                Glide.with(binding.root)
+                    .load(post.userAvatarUrl)
+                    .transform(CircleCrop())
+                    .into(binding.ivUserAvatar)
+            }
+
             if (post.imageUrl.isNotBlank()) {
                 binding.ivPostImage.visibility = View.VISIBLE
+                binding.ivImagePlaceholder.visibility = View.GONE
                 Glide.with(binding.root)
                     .load(post.imageUrl)
                     .into(binding.ivPostImage)
             } else {
                 binding.ivPostImage.visibility = View.GONE
+                binding.ivImagePlaceholder.visibility = View.VISIBLE
             }
 
             if (showActions) {

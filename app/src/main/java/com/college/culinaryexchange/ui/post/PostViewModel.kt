@@ -34,6 +34,19 @@ class PostViewModel(app: Application) : AndroidViewModel(app) {
     private val _operationResult = MutableLiveData<Result<Unit>>()
     val operationResult: LiveData<Result<Unit>> = _operationResult
 
+    private val _isFormValid = MutableLiveData(false)
+    val isFormValid: LiveData<Boolean> = _isFormValid
+
+    fun updateFormValidity(
+        title: String,
+        description: String,
+        ingredients: List<String>,
+        instructions: List<String>
+    ) {
+        _isFormValid.value = title.isNotBlank() && description.isNotBlank()
+            && ingredients.isNotEmpty() && instructions.isNotEmpty()
+    }
+
     fun loadPostForEdit(postId: String) {
         if (currentUserId.isBlank()) return
         viewModelScope.launch {
@@ -53,7 +66,17 @@ class PostViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    fun createPost(title: String, description: String, userName: String, imageUri: Uri?) {
+    fun createPost(
+        title: String,
+        description: String,
+        userName: String,
+        imageUri: Uri?,
+        ingredients: List<String> = emptyList(),
+        instructions: List<String> = emptyList(),
+        prepTime: Int = 0,
+        servings: Int = 0,
+        category: String = ""
+    ) {
         if (currentUserId.isBlank()) return
         _isLoading.value = true
         viewModelScope.launch {
@@ -62,7 +85,12 @@ class PostViewModel(app: Application) : AndroidViewModel(app) {
                 userName = userName,
                 title = title,
                 description = description,
-                timestamp = System.currentTimeMillis()
+                timestamp = System.currentTimeMillis(),
+                ingredients = ingredients,
+                instructions = instructions,
+                prepTime = prepTime,
+                servings = servings,
+                category = category
             )
             val result = repository.createPost(post, imageUri)
             _operationResult.postValue(result)
