@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 class ProfileViewModel(app: Application) : AndroidViewModel(app) {
 
     private val authRepository = AuthRepository()
-    private val postRepository = PostRepository(AppDatabase.getInstance(app).postDao())
+    private val postRepository = PostRepository(AppDatabase.getInstance(app).postDao(), app)
     private val currentUserId: String = FirebaseAuth.getInstance().currentUser?.uid ?: ""
 
     private val _user = MutableLiveData<User?>()

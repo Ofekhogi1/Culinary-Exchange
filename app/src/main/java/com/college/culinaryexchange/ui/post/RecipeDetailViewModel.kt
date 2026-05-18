@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 
 class RecipeDetailViewModel(app: Application) : AndroidViewModel(app) {
 
-    private val repository = PostRepository(AppDatabase.getInstance(app).postDao())
+    private val repository = PostRepository(AppDatabase.getInstance(app).postDao(), app)
 
     private val _post = MutableLiveData<PostEntity?>()
     val post: LiveData<PostEntity?> = _post

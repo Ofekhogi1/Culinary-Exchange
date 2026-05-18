@@ -18,7 +18,7 @@ enum class SortOrder { NEWEST_FIRST, OLDEST_FIRST }
 
 class FeedViewModel(app: Application) : AndroidViewModel(app) {
 
-    private val repository = PostRepository(AppDatabase.getInstance(app).postDao())
+    private val repository = PostRepository(AppDatabase.getInstance(app).postDao(), app)
 
     private val _allPosts: LiveData<List<PostEntity>> = repository.getAllPostsFromCache().asLiveData()
     private val _sortOrder = MutableLiveData(SortOrder.NEWEST_FIRST)

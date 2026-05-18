@@ -1,5 +1,6 @@
 package com.college.culinaryexchange.data.repository
 
+import android.content.Context
 import android.net.Uri
 import com.college.culinaryexchange.data.local.dao.PostDao
 import com.college.culinaryexchange.data.local.entity.PostEntity
@@ -8,9 +9,10 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.tasks.await
+import java.io.IOException
 import java.util.UUID
 
-class PostRepository(private val postDao: PostDao) {
+class PostRepository(private val postDao: PostDao, private val context: Context) {
 
     private val firestore = FirebaseFirestore.getInstance()
     private val storage = FirebaseStorage.getInstance()
@@ -53,8 +55,10 @@ class PostRepository(private val postDao: PostDao) {
     }
 
     private suspend fun uploadImage(uri: Uri): String {
+        val stream = context.contentResolver.openInputStream(uri)
+            ?: throw IOException("Cannot open image URI: $uri")
         val ref = storage.reference.child("posts/${UUID.randomUUID()}")
-        ref.putFile(uri).await()
+        stream.use { ref.putStream(it).await() }
         return ref.downloadUrl.await().toString()
     }
 
