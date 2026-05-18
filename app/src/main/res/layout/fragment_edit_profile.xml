@@ -94,30 +94,12 @@
 
                     </FrameLayout>
 
-                    <!-- Profile picture URL -->
                     <TextView
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Profile Picture URL"
-                        android:textColor="@color/text_primary"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        android:layout_marginBottom="6dp" />
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        style="@style/Widget.CulinaryExchange.TextInputLayout"
-                        app:hintEnabled="false">
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/etAvatarUrl"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="https://…"
-                            android:inputType="textUri"
-                            android:textSize="15sp"
-                            android:textColor="@color/text_primary" />
-                    </com.google.android.material.textfield.TextInputLayout>
+                        android:text="Tap to change photo"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="13sp" />
 
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
