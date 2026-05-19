@@ -75,7 +75,11 @@ class PostViewModel(app: Application) : AndroidViewModel(app) {
         instructions: List<String> = emptyList(),
         prepTime: Int = 0,
         servings: Int = 0,
-        category: String = ""
+        category: String = "",
+        nutritionCalories: Int = 0,
+        nutritionProtein: String = "",
+        nutritionCarbs: String = "",
+        nutritionFat: String = ""
     ) {
         if (currentUserId.isBlank()) return
         _isLoading.value = true
@@ -90,7 +94,11 @@ class PostViewModel(app: Application) : AndroidViewModel(app) {
                 instructions = instructions,
                 prepTime = prepTime,
                 servings = servings,
-                category = category
+                category = category,
+                nutritionCalories = nutritionCalories,
+                nutritionProtein = nutritionProtein,
+                nutritionCarbs = nutritionCarbs,
+                nutritionFat = nutritionFat
             )
             val result = repository.createPost(post, imageUri)
             _operationResult.postValue(result)

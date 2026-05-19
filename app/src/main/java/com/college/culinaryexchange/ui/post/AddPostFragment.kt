@@ -70,6 +70,19 @@ class AddPostFragment : Fragment() {
                     ImageLoader.load(requireContext(), post.imageUrl, binding.ivPostImage)
                     ImageViewCompat.setImageTintList(binding.ivPostImage, null)
                 }
+                // Category
+                if (post.category.isNotBlank()) {
+                    for (i in 0 until binding.chipGroupCategory.childCount) {
+                        val chip = binding.chipGroupCategory.getChildAt(i) as? Chip
+                        if (chip?.text.toString() == post.category) { chip?.isChecked = true; break }
+                    }
+                }
+                // Nutrition
+                if (post.nutritionCalories > 0) binding.etCalories.setText(post.nutritionCalories.toString())
+                if (post.nutritionProtein.isNotBlank()) binding.etProtein.setText(post.nutritionProtein)
+                if (post.nutritionCarbs.isNotBlank()) binding.etCarbs.setText(post.nutritionCarbs)
+                if (post.nutritionFat.isNotBlank()) binding.etFat.setText(post.nutritionFat)
+
                 ingredients.clear()
                 ingredients.addAll(post.ingredients)
                 post.ingredients.forEach { addIngredientChip(it) }
@@ -106,6 +119,13 @@ class AddPostFragment : Fragment() {
             val description = binding.etDescription.text.toString().trim()
             val prepTime = binding.etPrepTime.text.toString().trim().toIntOrNull() ?: 0
             val servings = binding.etServings.text.toString().trim().toIntOrNull() ?: 0
+            val selectedCategoryId = binding.chipGroupCategory.checkedChipId
+            val category = if (selectedCategoryId != -1)
+                binding.chipGroupCategory.findViewById<Chip>(selectedCategoryId)?.text?.toString() ?: "" else ""
+            val calories = binding.etCalories.text.toString().trim().toIntOrNull() ?: 0
+            val protein = binding.etProtein.text.toString().trim()
+            val carbs = binding.etCarbs.text.toString().trim()
+            val fat = binding.etFat.text.toString().trim()
 
             if (title.isBlank()) {
                 Toast.makeText(requireContext(), "Title is required", Toast.LENGTH_SHORT).show()
@@ -134,7 +154,12 @@ class AddPostFragment : Fragment() {
                     ingredients = ingredients.toList(),
                     instructions = instructions.toList(),
                     prepTime = prepTime,
-                    servings = servings
+                    servings = servings,
+                    category = category,
+                    nutritionCalories = calories,
+                    nutritionProtein = protein,
+                    nutritionCarbs = carbs,
+                    nutritionFat = fat
                 )
                 viewModel.updatePost(updatedPost, selectedImageUri)
             } else {
@@ -147,7 +172,12 @@ class AddPostFragment : Fragment() {
                         ingredients = ingredients.toList(),
                         instructions = instructions.toList(),
                         prepTime = prepTime,
-                        servings = servings
+                        servings = servings,
+                        category = category,
+                        nutritionCalories = calories,
+                        nutritionProtein = protein,
+                        nutritionCarbs = carbs,
+                        nutritionFat = fat
                     )
                 }
             }
