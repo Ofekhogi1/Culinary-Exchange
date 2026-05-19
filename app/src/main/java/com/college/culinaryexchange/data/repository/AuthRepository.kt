@@ -1,20 +1,22 @@
 package com.college.culinaryexchange.data.repository
 
-import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
+import android.util.Base64
+import com.college.culinaryexchange.data.repository.PostRepository.Companion.scaleBitmap
 import com.college.culinaryexchange.model.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.storage.FirebaseStorage
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
-import java.io.IOException
-import java.util.UUID
+import kotlinx.coroutines.withContext
+import java.io.ByteArrayOutputStream
 
 class AuthRepository {
 
     private val auth = FirebaseAuth.getInstance()
     private val db = FirebaseFirestore.getInstance()
-    private val storage = FirebaseStorage.getInstance()
 
     val currentUserId: String? get() = auth.currentUser?.uid
 
@@ -40,12 +42,16 @@ class AuthRepository {
         db.collection("users").document(user.id).set(user).await()
     }
 
-    suspend fun uploadAvatar(context: Context, uri: Uri): String {
-        val stream = context.contentResolver.openInputStream(uri)
-            ?: throw IOException("Cannot open avatar URI: $uri")
-        val ref = storage.reference.child("avatars/${UUID.randomUUID()}")
-        val snapshot = stream.use { ref.putStream(it).await() }
-        return snapshot.storage.downloadUrl.await().toString()
+    suspend fun uploadAvatar(uri: Uri): String = withContext(Dispatchers.IO) {
+        val ctx = com.google.firebase.FirebaseApp.getInstance().applicationContext
+        val original = ctx.contentResolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it) }
+            ?: throw IllegalStateException("Cannot read avatar from gallery")
+
+        val scaled = scaleBitmap(original, 400)
+        val out = ByteArrayOutputStream()
+        scaled.compress(Bitmap.CompressFormat.JPEG, 70, out)
+
+        "data:image/jpeg;base64," + Base64.encodeToString(out.toByteArray(), Base64.NO_WRAP)
     }
 
     fun logout() = auth.signOut()

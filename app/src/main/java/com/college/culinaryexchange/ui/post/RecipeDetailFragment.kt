@@ -11,8 +11,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.bumptech.glide.Glide
 import com.college.culinaryexchange.R
+import com.college.culinaryexchange.util.ImageLoader
 import com.college.culinaryexchange.databinding.FragmentRecipeDetailBinding
 
 class RecipeDetailFragment : Fragment() {
@@ -49,7 +49,7 @@ class RecipeDetailFragment : Fragment() {
             binding.tvFat.text = if (post.nutritionFat.isNotBlank()) post.nutritionFat else "—"
 
             if (post.imageUrl.isNotBlank()) {
-                Glide.with(this).load(post.imageUrl).centerCrop().into(binding.ivHero)
+                ImageLoader.load(requireContext(), post.imageUrl, binding.ivHero)
             }
 
             binding.layoutIngredients.removeAllViews()

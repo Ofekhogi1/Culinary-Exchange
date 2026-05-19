@@ -12,13 +12,13 @@
     <!-- Background Colors -->
     <color name="background">#FAFAFA</color>
     <color name="surface">#FFFFFF</color>
-    <color name="surface_variant">#F0F0F0</color>
+    <color name="surface_variant">#F5F5F5</color>
 
     <!-- Text Colors -->
     <color name="on_primary">#FFFFFF</color>
     <color name="on_surface">#000000</color>
     <color name="text_primary">#212121</color>
-    <color name="text_secondary">#717182</color>
+    <color name="text_secondary">#757575</color>
     <color name="text_hint">#9E9E9E</color>
 
     <!-- Border & Divider Colors -->
@@ -27,6 +27,7 @@
 
     <!-- Input / Surface Tones -->
     <color name="input_background">#F3F3F5</color>
+    <color name="surface_alt">#F9F9F9</color>
     <color name="stats_background">#F5F5F5</color>
 
     <!-- Transparent Overlays -->

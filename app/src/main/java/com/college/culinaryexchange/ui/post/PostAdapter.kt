@@ -6,10 +6,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.college.culinaryexchange.data.local.entity.PostEntity
 import com.college.culinaryexchange.databinding.ItemPostBinding
+import com.college.culinaryexchange.util.ImageLoader
 import java.util.concurrent.TimeUnit
 
 class PostAdapter(
@@ -36,18 +35,13 @@ class PostAdapter(
             binding.tvTimestamp.text = getRelativeTime(post.timestamp)
 
             if (post.userAvatarUrl.isNotBlank()) {
-                Glide.with(binding.root)
-                    .load(post.userAvatarUrl)
-                    .transform(CircleCrop())
-                    .into(binding.ivUserAvatar)
+                ImageLoader.loadCircle(binding.root.context, post.userAvatarUrl, binding.ivUserAvatar)
             }
 
             if (post.imageUrl.isNotBlank()) {
                 binding.ivPostImage.visibility = View.VISIBLE
                 binding.ivImagePlaceholder.visibility = View.GONE
-                Glide.with(binding.root)
-                    .load(post.imageUrl)
-                    .into(binding.ivPostImage)
+                ImageLoader.load(binding.root.context, post.imageUrl, binding.ivPostImage)
             } else {
                 binding.ivPostImage.visibility = View.GONE
                 binding.ivImagePlaceholder.visibility = View.VISIBLE

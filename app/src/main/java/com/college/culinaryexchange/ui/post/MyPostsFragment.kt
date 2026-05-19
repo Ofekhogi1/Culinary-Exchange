@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import android.widget.Toast
 import com.college.culinaryexchange.databinding.FragmentMyPostsBinding
 
 class MyPostsFragment : Fragment() {
@@ -45,6 +46,10 @@ class MyPostsFragment : Fragment() {
 
         viewModel.isLoading.observe(viewLifecycleOwner) { loading ->
             binding.progressBar.visibility = if (loading) View.VISIBLE else View.GONE
+        }
+
+        viewModel.operationResult.observe(viewLifecycleOwner) { result ->
+            result.onFailure { Toast.makeText(requireContext(), "Error: ${it.message}", Toast.LENGTH_SHORT).show() }
         }
 
         viewModel.loadUserPosts()

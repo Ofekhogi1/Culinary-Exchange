@@ -73,7 +73,7 @@
                         android:layout_height="wrap_content"
                         android:text="Basic Information"
                         android:textColor="@color/text_primary"
-                        android:textSize="15sp"
+                        android:textSize="18sp"
                         android:textStyle="bold"
                         android:layout_marginBottom="16dp" />
 
@@ -255,7 +255,7 @@
                         android:layout_height="wrap_content"
                         android:text="Ingredients"
                         android:textColor="@color/text_primary"
-                        android:textSize="15sp"
+                        android:textSize="18sp"
                         android:textStyle="bold"
                         android:layout_marginBottom="12dp" />
 
@@ -285,13 +285,18 @@
                                 android:textColor="@color/text_primary" />
                         </com.google.android.material.textfield.TextInputLayout>
 
-                        <ImageView
+                        <FrameLayout
                             android:id="@+id/btnAddIngredient"
-                            android:layout_width="44dp"
-                            android:layout_height="44dp"
-                            android:background="@drawable/bg_step_badge"
-                            android:padding="10dp"
-                            android:src="@drawable/ic_add" />
+                            android:layout_width="56dp"
+                            android:layout_height="56dp"
+                            android:background="@drawable/bg_step_badge">
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_add"
+                                android:tint="@color/white" />
+                        </FrameLayout>
 
                     </LinearLayout>
 
@@ -326,7 +331,7 @@
                         android:layout_height="wrap_content"
                         android:text="Instructions"
                         android:textColor="@color/text_primary"
-                        android:textSize="15sp"
+                        android:textSize="18sp"
                         android:textStyle="bold"
                         android:layout_marginBottom="12dp" />
 
@@ -357,14 +362,19 @@
                                 android:textColor="@color/text_primary" />
                         </com.google.android.material.textfield.TextInputLayout>
 
-                        <ImageView
+                        <FrameLayout
                             android:id="@+id/btnAddInstruction"
-                            android:layout_width="44dp"
-                            android:layout_height="44dp"
-                            android:layout_marginTop="4dp"
-                            android:background="@drawable/bg_step_badge"
-                            android:padding="10dp"
-                            android:src="@drawable/ic_add" />
+                            android:layout_width="56dp"
+                            android:layout_height="56dp"
+                            android:layout_marginTop="8dp"
+                            android:background="@drawable/bg_step_badge">
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_add"
+                                android:tint="@color/white" />
+                        </FrameLayout>
 
                     </LinearLayout>
 
@@ -385,7 +395,8 @@
                 android:layout_height="56dp"
                 android:text="Create Recipe"
                 android:textSize="16sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:layout_marginBottom="80dp" />
 
             <ProgressBar
                 android:id="@+id/progressBar"

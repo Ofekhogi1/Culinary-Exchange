@@ -44,7 +44,7 @@
 
     <style name="ShapeAppearance.CulinaryExchange.LargeComponent" parent="ShapeAppearance.Material3.LargeComponent">
         <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">@dimen/radius_xl</item>
+        <item name="cornerSize">@dimen/card_corner_radius</item>
     </style>
 
     <style name="ShapeAppearance.RoundedSquareFAB" parent="">
@@ -74,6 +74,8 @@
         <item name="boxCornerRadiusTopEnd">@dimen/input_corner_radius</item>
         <item name="boxCornerRadiusBottomStart">@dimen/input_corner_radius</item>
         <item name="boxCornerRadiusBottomEnd">@dimen/input_corner_radius</item>
+        <item name="boxStrokeColor">@color/border</item>
+        <item name="colorAccent">@color/primary</item>
     </style>
 
     <style name="Widget.CulinaryExchange.CardView" parent="Widget.Material3.CardView.Elevated">
@@ -106,6 +108,37 @@
 
     <style name="TextAppearance.CulinaryExchange.Body2" parent="TextAppearance.Material3.BodyMedium">
         <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:lineSpacingMultiplier">1.5</item>
+    </style>
+
+    <style name="TextAppearance.CulinaryExchange.H4" parent="TextAppearance.Material3.HeadlineLarge">
+        <item name="android:textSize">32sp</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:lineSpacingMultiplier">1.5</item>
+    </style>
+
+    <style name="TextAppearance.CulinaryExchange.H5" parent="TextAppearance.Material3.HeadlineMedium">
+        <item name="android:textSize">24sp</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:lineSpacingMultiplier">1.5</item>
+    </style>
+
+    <style name="TextAppearance.CulinaryExchange.H6" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:lineSpacingMultiplier">1.5</item>
+    </style>
+
+    <style name="TextAppearance.CulinaryExchange.Subtitle1" parent="TextAppearance.Material3.TitleMedium">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:lineSpacingMultiplier">1.5</item>
+    </style>
+
+    <style name="TextAppearance.CulinaryExchange.Caption" parent="TextAppearance.Material3.LabelMedium">
+        <item name="android:textSize">12sp</item>
         <item name="android:textColor">@color/text_secondary</item>
         <item name="android:lineSpacingMultiplier">1.5</item>
     </style>

@@ -38,9 +38,9 @@ class EditProfileViewModel(app: Application) : AndroidViewModel(app) {
         viewModelScope.launch {
             val existingUrl = _user.value?.avatarUrl.orEmpty()
             val avatarUrl = if (avatarUri != null) {
-                val upload = runCatching { repository.uploadAvatar(getApplication(), avatarUri) }
+                val upload = runCatching { repository.uploadAvatar(avatarUri) }
                 if (upload.isFailure) {
-                    _operationResult.postValue(Result.failure(upload.exceptionOrNull()!!))
+                    _operationResult.postValue(Result.failure(upload.exceptionOrNull() ?: Exception("Avatar upload failed")))
                     _isLoading.postValue(false)
                     return@launch
                 }

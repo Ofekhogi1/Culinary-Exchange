@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 
 class PostViewModel(app: Application) : AndroidViewModel(app) {
 
-    private val repository = PostRepository(AppDatabase.getInstance(app).postDao(), app)
+    private val repository = PostRepository(AppDatabase.getInstance(app).postDao())
     private val currentUserId: String = FirebaseAuth.getInstance().currentUser?.uid
         ?: run { Log.w("PostViewModel", "No authenticated user"); "" }
 

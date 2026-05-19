@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_light"
+    android:background="@color/background"
     android:fillViewport="true">
 
     <LinearLayout
@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
         android:orientation="vertical"
-        android:paddingHorizontal="24dp"
+        android:paddingHorizontal="16dp"
         android:paddingTop="80dp"
         android:paddingBottom="40dp">
 
@@ -20,12 +20,13 @@
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:background="@drawable/bg_logo"
-            android:layout_marginBottom="20dp">
+            android:layout_marginBottom="24dp">
             <ImageView
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_gravity="center"
-                android:src="@drawable/ic_restaurant" />
+                android:src="@drawable/ic_restaurant"
+                android:tint="@color/white" />
         </FrameLayout>
 
         <TextView
@@ -33,7 +34,7 @@
             android:layout_height="wrap_content"
             android:text="CulinaryExchange"
             android:textColor="@color/text_primary"
-            android:textSize="28sp"
+            android:textSize="32sp"
             android:textStyle="bold"
             android:layout_marginBottom="8dp" />
 
@@ -44,15 +45,16 @@
             android:textColor="@color/text_secondary"
             android:textSize="14sp"
             android:gravity="center"
-            android:layout_marginBottom="40dp" />
+            android:layout_marginBottom="32dp"
+            android:lineSpacingMultiplier="1.5" />
 
         <!-- Form Card -->
-        <androidx.cardview.widget.CardView
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardCornerRadius="@dimen/card_corner_radius"
             app:cardElevation="0dp"
-            app:cardBackgroundColor="@color/white"
+            app:cardBackgroundColor="@color/surface"
             app:strokeColor="@color/border"
             app:strokeWidth="1dp">
 
@@ -60,7 +62,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="24dp">
+                android:padding="32dp">
 
                 <!-- Email -->
                 <TextView
@@ -70,12 +72,12 @@
                     android:textColor="@color/text_primary"
                     android:textSize="14sp"
                     android:textStyle="bold"
-                    android:layout_marginBottom="6dp" />
+                    android:layout_marginBottom="8dp" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="20dp"
+                    android:layout_marginBottom="16dp"
                     style="@style/Widget.CulinaryExchange.TextInputLayout"
                     app:hintEnabled="false"
                     app:startIconDrawable="@drawable/ic_email"
@@ -83,11 +85,12 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etEmail"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="56dp"
                         android:hint="you@example.com"
                         android:inputType="textEmailAddress"
-                        android:textSize="15sp"
-                        android:textColor="@color/text_primary" />
+                        android:textSize="16sp"
+                        android:textColor="@color/text_primary"
+                        android:paddingHorizontal="16dp" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <!-- Password -->
@@ -98,12 +101,12 @@
                     android:textColor="@color/text_primary"
                     android:textSize="14sp"
                     android:textStyle="bold"
-                    android:layout_marginBottom="6dp" />
+                    android:layout_marginBottom="8dp" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="28dp"
+                    android:layout_marginBottom="24dp"
                     style="@style/Widget.CulinaryExchange.TextInputLayout"
                     app:hintEnabled="false"
                     app:startIconDrawable="@drawable/ic_lock"
@@ -112,11 +115,12 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etPassword"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="••••••••"
+                        android:layout_height="56dp"
+                        android:hint="&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;"
                         android:inputType="textPassword"
-                        android:textSize="15sp"
-                        android:textColor="@color/text_primary" />
+                        android:textSize="16sp"
+                        android:textColor="@color/text_primary"
+                        android:paddingHorizontal="16dp" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <!-- Sign In Button -->
@@ -125,19 +129,19 @@
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
                     android:text="Sign In"
-                    android:textStyle="bold"
                     android:layout_marginBottom="16dp" />
 
-                <!-- Sign Up link -->
+                <!-- Toggle link -->
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:paddingTop="8dp">
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Don't have an account? "
+                        android:text="Don&#x27;t have an account? "
                         android:textColor="@color/text_secondary"
                         android:textSize="14sp" />
                     <TextView
@@ -147,7 +151,8 @@
                         android:text="Sign Up"
                         android:textColor="@color/primary"
                         android:textSize="14sp"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        android:textIsSelectable="false" />
                 </LinearLayout>
 
                 <ProgressBar
@@ -159,7 +164,7 @@
                     android:visibility="gone" />
 
             </LinearLayout>
-        </androidx.cardview.widget.CardView>
+        </com.google.android.material.card.MaterialCardView>
 
     </LinearLayout>
 </ScrollView>

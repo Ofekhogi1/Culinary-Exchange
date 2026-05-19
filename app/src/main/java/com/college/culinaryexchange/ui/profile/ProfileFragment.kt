@@ -8,9 +8,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.CircleCrop
+import android.widget.Toast
 import com.college.culinaryexchange.R
+import com.college.culinaryexchange.util.ImageLoader
 import com.college.culinaryexchange.databinding.FragmentProfileBinding
 import com.college.culinaryexchange.ui.post.PostAdapter
 
@@ -41,13 +41,11 @@ class ProfileFragment : Fragment() {
 
         viewModel.user.observe(viewLifecycleOwner) { user ->
             user ?: return@observe
-            binding.tvName.text = user.name
-            binding.tvEmail.text = user.email
-            if (user.avatarUrl.isNotBlank()) {
-                Glide.with(this)
-                    .load(user.avatarUrl)
-                    .transform(CircleCrop())
-                    .into(binding.ivAvatar)
+            binding.tvName.text = user.name.orEmpty()
+            binding.tvEmail.text = user.email.orEmpty()
+            val avatar = user.avatarUrl.orEmpty()
+            if (avatar.isNotBlank()) {
+                ImageLoader.loadCircle(requireContext(), avatar, binding.ivAvatar)
             }
         }
 
@@ -61,6 +59,10 @@ class ProfileFragment : Fragment() {
 
         viewModel.isLoading.observe(viewLifecycleOwner) { loading ->
             binding.progressBar.visibility = if (loading) View.VISIBLE else View.GONE
+        }
+
+        viewModel.operationResult.observe(viewLifecycleOwner) { result ->
+            result.onFailure { Toast.makeText(requireContext(), "Error: ${it.message}", Toast.LENGTH_SHORT).show() }
         }
 
         binding.btnSettings.setOnClickListener {

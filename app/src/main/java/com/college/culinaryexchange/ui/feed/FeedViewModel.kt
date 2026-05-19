@@ -18,7 +18,7 @@ enum class SortOrder { NEWEST_FIRST, OLDEST_FIRST }
 
 class FeedViewModel(app: Application) : AndroidViewModel(app) {
 
-    private val repository = PostRepository(AppDatabase.getInstance(app).postDao(), app)
+    private val repository = PostRepository(AppDatabase.getInstance(app).postDao())
 
     private val _allPosts: LiveData<List<PostEntity>> = repository.getAllPostsFromCache().asLiveData()
     private val _sortOrder = MutableLiveData(SortOrder.NEWEST_FIRST)
@@ -71,6 +71,8 @@ class FeedViewModel(app: Application) : AndroidViewModel(app) {
         _isLoading.value = true
         viewModelScope.launch {
             runCatching { repository.refreshAllPosts() }
+                .onFailure { android.util.Log.e("FeedViewModel", "loadPosts failed: ${it.message}", it) }
+                .onSuccess { android.util.Log.d("FeedViewModel", "loadPosts succeeded") }
             _isLoading.postValue(false)
         }
     }

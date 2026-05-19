@@ -14,6 +14,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.college.culinaryexchange.R
+import com.college.culinaryexchange.util.ImageLoader
 import com.college.culinaryexchange.data.local.entity.PostEntity
 import com.college.culinaryexchange.databinding.FragmentAddPostBinding
 import com.college.culinaryexchange.model.Post
@@ -66,7 +67,7 @@ class AddPostFragment : Fragment() {
                 binding.etPrepTime.setText(if (post.prepTime > 0) post.prepTime.toString() else "")
                 binding.etServings.setText(if (post.servings > 0) post.servings.toString() else "")
                 if (post.imageUrl.isNotBlank()) {
-                    Glide.with(this).load(post.imageUrl).centerCrop().into(binding.ivPostImage)
+                    ImageLoader.load(requireContext(), post.imageUrl, binding.ivPostImage)
                     ImageViewCompat.setImageTintList(binding.ivPostImage, null)
                 }
                 ingredients.clear()

@@ -160,7 +160,7 @@
                 android:layout_marginBottom="8dp"
                 android:text="My Recipes"
                 android:textColor="@color/text_primary"
-                android:textSize="18sp"
+                android:textSize="20sp"
                 android:textStyle="bold" />
 
             <androidx.recyclerview.widget.RecyclerView

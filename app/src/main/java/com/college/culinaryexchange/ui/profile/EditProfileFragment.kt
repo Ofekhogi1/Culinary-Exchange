@@ -12,6 +12,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.college.culinaryexchange.databinding.FragmentEditProfileBinding
+import com.college.culinaryexchange.util.ImageLoader
 
 class EditProfileFragment : Fragment() {
 
@@ -48,7 +49,7 @@ class EditProfileFragment : Fragment() {
             binding.etEmail.setText(user.email)
             binding.etBio.setText(user.bio)
             if (user.avatarUrl.isNotBlank()) {
-                Glide.with(this).load(user.avatarUrl).circleCrop().into(binding.ivAvatar)
+                ImageLoader.loadCircle(requireContext(), user.avatarUrl, binding.ivAvatar)
             }
         }
 
