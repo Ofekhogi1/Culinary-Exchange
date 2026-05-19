@@ -24,6 +24,10 @@ class AuthRepository {
         auth.signInWithEmailAndPassword(email, password).await()
     }
 
+    suspend fun resetPassword(email: String): Result<Unit> = runCatching {
+        auth.sendPasswordResetEmail(email.trim()).await()
+    }
+
     suspend fun register(name: String, email: String, password: String): Result<Unit> = runCatching {
         val result = auth.createUserWithEmailAndPassword(email, password).await()
         val uid = result.user?.uid ?: throw IllegalStateException("Auth succeeded but user is null")
