@@ -11,6 +11,7 @@ sealed class AuthState {
     object Idle : AuthState()
     object Loading : AuthState()
     object Success : AuthState()
+    object PasswordResetSent : AuthState()
     data class Error(val message: String) : AuthState()
 }
 
@@ -36,6 +37,15 @@ class AuthViewModel : ViewModel() {
             repository.register(name, email, password)
                 .onSuccess { _authState.postValue(AuthState.Success) }
                 .onFailure { _authState.postValue(AuthState.Error(it.message ?: "Registration failed")) }
+        }
+    }
+
+    fun resetPassword(email: String) {
+        _authState.value = AuthState.Loading
+        viewModelScope.launch {
+            repository.resetPassword(email)
+                .onSuccess { _authState.postValue(AuthState.PasswordResetSent) }
+                .onFailure { _authState.postValue(AuthState.Error(it.message ?: "Could not send reset email")) }
         }
     }
 }
