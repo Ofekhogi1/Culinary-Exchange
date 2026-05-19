@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.GravityCompat
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -93,10 +94,16 @@ class HomeFragment : Fragment() {
             viewModel.setCategory(category)
         }
 
+        // Search input
+        binding.etSearch.addTextChangedListener { editable ->
+            viewModel.setSearchQuery(editable?.toString().orEmpty())
+        }
+
         // Reset filters
         binding.btnResetFilters.setOnClickListener {
             binding.radioGroupSort.check(binding.radioNewest.id)
             binding.chipGroupCategory.check(binding.chipAll.id)
+            binding.etSearch.setText("")
             viewModel.resetFilters()
         }
     }
