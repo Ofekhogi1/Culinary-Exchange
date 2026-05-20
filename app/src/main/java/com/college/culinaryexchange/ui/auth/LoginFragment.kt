@@ -28,7 +28,7 @@ class LoginFragment : Fragment() {
 
         binding.btnLogin.setOnClickListener {
             val email = binding.etEmail.text.toString().trim()
-            val password = binding.etPassword.text.toString()
+            val password = binding.etPassword.text.toString().trim()
             when {
                 !Validators.isValidEmail(email) -> {
                     Toast.makeText(requireContext(), "Enter a valid email address", Toast.LENGTH_SHORT).show()
