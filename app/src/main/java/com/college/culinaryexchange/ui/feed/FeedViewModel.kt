@@ -42,8 +42,13 @@ class FeedViewModel(app: Application) : AndroidViewModel(app) {
             val filtered = if (category == "All") posts else posts.filter { it.category == category }
             val searched = if (query.isBlank()) filtered
                            else filtered.filter { it.title.contains(query, ignoreCase = true) }
-            value = if (sort == SortOrder.NEWEST_FIRST) searched.sortedByDescending { it.timestamp }
-                    else searched.sortedBy { it.timestamp }
+            val result = if (sort == SortOrder.NEWEST_FIRST) searched.sortedByDescending { it.timestamp }
+                         else searched.sortedBy { it.timestamp }
+            android.util.Log.d(
+                "FeedViewModel",
+                "filteredPosts: total=${posts.size} category=$category query='$query' result=${result.size}"
+            )
+            value = result
         }
         addSource(_allPosts) { update() }
         addSource(_sortOrder) { update() }
