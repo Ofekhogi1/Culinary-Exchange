@@ -55,6 +55,7 @@ class HomeFragment : Fragment() {
 
         viewModel.filteredPosts.observe(viewLifecycleOwner) { posts ->
             postAdapter.submitList(posts)
+            binding.tvEmptyState.visibility = if (posts.isEmpty()) View.VISIBLE else View.GONE
         }
 
         viewModel.isLoading.observe(viewLifecycleOwner) { loading ->
