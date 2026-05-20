@@ -46,10 +46,21 @@ class LoginFragment : Fragment() {
             findNavController().navigate(R.id.action_login_to_register)
         }
 
+        binding.btnForgotPassword.setOnClickListener {
+            val email = binding.etEmail.text.toString().trim()
+            if (!Validators.isValidEmail(email)) {
+                Toast.makeText(requireContext(), "Enter your email address first", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            viewModel.resetPassword(email)
+        }
+
         viewModel.authState.observe(viewLifecycleOwner) { state ->
             binding.progressBar.visibility = if (state is AuthState.Loading) View.VISIBLE else View.GONE
             when (state) {
                 is AuthState.Success -> findNavController().navigate(R.id.action_login_to_home)
+                is AuthState.PasswordResetSent ->
+                    Toast.makeText(requireContext(), "Reset link sent — check your inbox", Toast.LENGTH_LONG).show()
                 is AuthState.Error -> Toast.makeText(requireContext(), state.message, Toast.LENGTH_LONG).show()
                 else -> Unit
             }
