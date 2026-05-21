@@ -62,6 +62,15 @@ class HomeFragment : Fragment() {
             binding.progressBar.visibility = if (loading) View.VISIBLE else View.GONE
         }
 
+        viewModel.searchQuery.observe(viewLifecycleOwner) { query ->
+            binding.btnClearSearch.visibility = if (query.isNotBlank()) View.VISIBLE else View.GONE
+        }
+
+        binding.btnClearSearch.setOnClickListener {
+            binding.etSearch.setText("")
+            viewModel.clearSearch()
+        }
+
         lifecycleScope.launch {
             runCatching { SeedDataUtil.seedIfEmpty() }
                 .onFailure { Log.e("HomeFragment", "Seed failed: ${it.message}", it) }
