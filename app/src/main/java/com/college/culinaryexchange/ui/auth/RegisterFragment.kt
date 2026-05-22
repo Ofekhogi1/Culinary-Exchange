@@ -29,7 +29,7 @@ class RegisterFragment : Fragment() {
         binding.btnRegister.setOnClickListener {
             val name = binding.etName.text.toString().trim()
             val email = binding.etEmail.text.toString().trim()
-            val password = binding.etPassword.text.toString()
+            val password = binding.etPassword.text.toString().trim()
             when {
                 !Validators.isValidName(name) -> {
                     Toast.makeText(requireContext(), "Name must be at least 2 characters", Toast.LENGTH_SHORT).show()
@@ -39,8 +39,12 @@ class RegisterFragment : Fragment() {
                     Toast.makeText(requireContext(), "Enter a valid email address", Toast.LENGTH_SHORT).show()
                     return@setOnClickListener
                 }
-                !Validators.isValidPassword(password) -> {
-                    Toast.makeText(requireContext(), "Password must be at least 6 characters", Toast.LENGTH_SHORT).show()
+                !Validators.isStrongPassword(password) -> {
+                    Toast.makeText(
+                        requireContext(),
+                        "Password must be 8+ characters with a capital letter and a number",
+                        Toast.LENGTH_SHORT
+                    ).show()
                     return@setOnClickListener
                 }
             }
