@@ -11,4 +11,13 @@ object Validators {
 
     /** Recipe title must be 3–80 non-blank characters. */
     fun isValidRecipeTitle(title: String): Boolean = title.trim().length in 3..80
+
+    /**
+     * Strong password: ≥8 chars, at least one uppercase letter and one digit.
+     * Use this for new registrations; [isValidPassword] is kept for backwards compat.
+     */
+    fun isStrongPassword(password: String): Boolean =
+        password.length >= 8 &&
+        password.any { it.isUpperCase() } &&
+        password.any { it.isDigit() }
 }
