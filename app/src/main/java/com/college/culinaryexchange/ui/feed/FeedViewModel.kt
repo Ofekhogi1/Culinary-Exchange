@@ -29,19 +29,31 @@ class FeedViewModel(app: Application) : AndroidViewModel(app) {
     private val _allPosts: LiveData<List<PostEntity>> = repository.getAllPostsFromCache().asLiveData()
     private val _sortOrder = MutableLiveData(SortOrder.NEWEST_FIRST)
     private val _selectedCategory = MutableLiveData("All")
+    private val _searchQuery = MutableLiveData("")
+
+    val searchQuery: LiveData<String> = _searchQuery
 
     val filteredPosts: LiveData<List<PostEntity>> = MediatorLiveData<List<PostEntity>>().apply {
         fun update() {
             val posts = _allPosts.value ?: return
             val sort = _sortOrder.value ?: SortOrder.NEWEST_FIRST
             val category = _selectedCategory.value ?: "All"
+            val query = _searchQuery.value.orEmpty().trim()
             val filtered = if (category == "All") posts else posts.filter { it.category == category }
-            value = if (sort == SortOrder.NEWEST_FIRST) filtered.sortedByDescending { it.timestamp }
-                    else filtered.sortedBy { it.timestamp }
+            val searched = if (query.isBlank()) filtered
+                           else filtered.filter { it.title.contains(query, ignoreCase = true) }
+            val result = if (sort == SortOrder.NEWEST_FIRST) searched.sortedByDescending { it.timestamp }
+                         else searched.sortedBy { it.timestamp }
+            android.util.Log.d(
+                "FeedViewModel",
+                "filteredPosts: total=${posts.size} category=$category query='$query' result=${result.size}"
+            )
+            value = result
         }
         addSource(_allPosts) { update() }
         addSource(_sortOrder) { update() }
         addSource(_selectedCategory) { update() }
+        addSource(_searchQuery) { update() }
     }
 
     private val _isLoading = MutableLiveData(false)
@@ -79,9 +91,12 @@ class FeedViewModel(app: Application) : AndroidViewModel(app) {
 
     fun setSortOrder(order: SortOrder) { _sortOrder.value = order }
     fun setCategory(category: String) { _selectedCategory.value = category }
+    fun setSearchQuery(query: String) { _searchQuery.value = query }
+    fun clearSearch() { _searchQuery.value = "" }
     fun resetFilters() {
         _sortOrder.value = SortOrder.NEWEST_FIRST
         _selectedCategory.value = "All"
+        _searchQuery.value = ""
     }
 
     fun loadPosts() {
