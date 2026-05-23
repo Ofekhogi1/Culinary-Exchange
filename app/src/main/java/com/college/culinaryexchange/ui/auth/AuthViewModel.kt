@@ -23,6 +23,7 @@ class AuthViewModel : ViewModel() {
     val authState: LiveData<AuthState> = _authState
 
     fun login(email: String, password: String) {
+        if (_authState.value == AuthState.Loading) return   // prevent double-submit
         _authState.value = AuthState.Loading
         viewModelScope.launch {
             repository.login(email, password)
@@ -43,6 +44,7 @@ class AuthViewModel : ViewModel() {
     }
 
     fun register(name: String, email: String, password: String) {
+        if (_authState.value == AuthState.Loading) return   // prevent double-submit
         _authState.value = AuthState.Loading
         viewModelScope.launch {
             repository.register(name, email, password)
