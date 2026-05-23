@@ -19,6 +19,9 @@ interface PostDao {
     @Query("SELECT COUNT(*) FROM posts WHERE userId = :userId")
     fun getPostCountByUser(userId: String): Flow<Int>
 
+    @Query("SELECT * FROM posts WHERE category = :category ORDER BY timestamp DESC")
+    fun getPostsByCategory(category: String): Flow<List<PostEntity>>
+
     @Upsert
     suspend fun upsertAll(posts: List<PostEntity>)
 
