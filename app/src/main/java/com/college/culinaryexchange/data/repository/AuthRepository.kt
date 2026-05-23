@@ -19,6 +19,8 @@ class AuthRepository {
     private val db = FirebaseFirestore.getInstance()
 
     val currentUserId: String? get() = auth.currentUser?.uid
+    val isLoggedIn: Boolean get() = auth.currentUser != null
+    val currentUserEmail: String? get() = auth.currentUser?.email
 
     suspend fun login(email: String, password: String): Result<Unit> = runCatching {
         auth.signInWithEmailAndPassword(email, password).await()
