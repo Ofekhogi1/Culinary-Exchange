@@ -68,4 +68,7 @@ class AuthViewModel : ViewModel() {
                 .onFailure { _authState.postValue(AuthState.Error(it.message ?: "Could not send reset email")) }
         }
     }
+
+    /** Reset state to Idle — call this when navigating back to a screen to avoid re-triggering observers. */
+    fun clearState() { _authState.value = AuthState.Idle }
 }
