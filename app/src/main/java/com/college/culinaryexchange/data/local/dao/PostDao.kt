@@ -28,8 +28,14 @@ interface PostDao {
     @Upsert
     suspend fun upsert(post: PostEntity)
 
+    @Query("SELECT MAX(timestamp) FROM posts")
+    suspend fun getLatestTimestamp(): Long?
+
     @Query("DELETE FROM posts WHERE id = :postId")
     suspend fun deleteById(postId: String)
+
+    @Query("DELETE FROM posts WHERE userId = :userId")
+    suspend fun deleteByUserId(userId: String)
 
     @Query("DELETE FROM posts")
     suspend fun deleteAll()
