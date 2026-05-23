@@ -47,6 +47,17 @@ class PostRepository(private val postDao: PostDao) {
         }
     }
 
+    suspend fun refreshUserPosts(userId: String) = withContext(Dispatchers.IO) {
+        Log.d(TAG, "refreshUserPosts: uid=$userId")
+        val snapshot = postsCollection
+            .whereEqualTo("userId", userId)
+            .orderBy("timestamp", com.google.firebase.firestore.Query.Direction.DESCENDING)
+            .get().await()
+        val posts = snapshot.toObjects(Post::class.java)
+        postDao.upsertAll(posts.map { it.toEntity() })
+        Log.d(TAG, "refreshUserPosts: cached ${posts.size} posts for user")
+    }
+
     suspend fun createPost(post: Post, imageUri: Uri?): Result<Unit> = runCatching {
         val imageUrl = imageUri?.let { uploadImage(it) } ?: ""
         val finalPost = post.copy(id = UUID.randomUUID().toString(), imageUrl = imageUrl)
