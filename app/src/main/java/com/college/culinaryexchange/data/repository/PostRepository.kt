@@ -30,7 +30,7 @@ class PostRepository(private val postDao: PostDao) {
 
     fun getUserPostCount(userId: String): Flow<Int> = postDao.getPostCountByUser(userId)
 
-    suspend fun refreshAllPosts() {
+    suspend fun refreshAllPosts() = withContext(Dispatchers.IO) {
         Log.d(TAG, "refreshAllPosts: starting")
         try {
             val snapshot = postsCollection
