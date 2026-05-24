@@ -26,6 +26,9 @@ class ProfileViewModel(app: Application) : AndroidViewModel(app) {
     private val _isLoading = MutableLiveData(false)
     val isLoading: LiveData<Boolean> = _isLoading
 
+    private val _error = MutableLiveData<String?>()
+    val error: LiveData<String?> = _error
+
     private val _operationResult = MutableLiveData<Result<Unit>>()
     val operationResult: LiveData<Result<Unit>> = _operationResult
 
