@@ -67,6 +67,12 @@ class LoginFragment : Fragment() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        // Clear any lingering Success/Error state so back-navigation doesn't re-trigger it
+        viewModel.clearState()
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
