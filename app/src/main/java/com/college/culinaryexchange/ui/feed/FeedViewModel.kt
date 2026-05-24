@@ -26,6 +26,10 @@ class FeedViewModel(app: Application) : AndroidViewModel(app) {
 
     private val repository = PostRepository(AppDatabase.getInstance(app).postDao())
 
+    companion object {
+        private const val MAX_MEAL_RETRIES = 2
+    }
+
     private val _allPosts: LiveData<List<PostEntity>> = repository.getAllPostsFromCache().asLiveData()
     private val _sortOrder = MutableLiveData(SortOrder.NEWEST_FIRST)
     private val _selectedCategory = MutableLiveData("All")
@@ -66,26 +70,31 @@ class FeedViewModel(app: Application) : AndroidViewModel(app) {
     private val _isMealLoading = MutableLiveData(false)
     val isMealLoading: LiveData<Boolean> = _isMealLoading
 
-    fun loadMealInspiration() {
+    fun loadMealInspiration(retryCount: Int = 0) {
         _isMealLoading.value = true
         viewModelScope.launch {
-            runCatching { RetrofitClient.mealApi.getRandomMeal().meals?.firstOrNull() }
-                .onSuccess { meal ->
-                    _mealInspiration.postValue(
-                        meal?.let {
-                            MealInspiration(
-                                name = it.strMeal,
-                                category = it.strCategory,
-                                area = it.strArea,
-                                thumbnailUrl = it.strMealThumb
-                            )
-                        }
-                    )
+            try {
+                val meal = RetrofitClient.mealApi.getRandomMeal().meals?.firstOrNull()
+                _mealInspiration.postValue(
+                    meal?.let {
+                        MealInspiration(
+                            name = it.strMeal,
+                            category = it.strCategory,
+                            area = it.strArea,
+                            thumbnailUrl = it.strMealThumb
+                        )
+                    }
+                )
+            } catch (e: Exception) {
+                android.util.Log.e("FeedViewModel", "loadMealInspiration failed (attempt ${retryCount + 1}): ${e.message}")
+                if (retryCount < MAX_MEAL_RETRIES) {
+                    android.util.Log.d("FeedViewModel", "Retrying loadMealInspiration…")
+                    loadMealInspiration(retryCount + 1)
+                    return@launch
                 }
-                .onFailure {
-                    android.util.Log.e("FeedViewModel", "loadMealInspiration failed: ${it.message}")
-                }
-            _isMealLoading.postValue(false)
+            } finally {
+                _isMealLoading.postValue(false)
+            }
         }
     }
 
