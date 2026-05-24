@@ -56,7 +56,10 @@ class LoginFragment : Fragment() {
         }
 
         viewModel.authState.observe(viewLifecycleOwner) { state ->
-            binding.progressBar.visibility = if (state is AuthState.Loading) View.VISIBLE else View.GONE
+            val loading = state is AuthState.Loading
+            binding.progressBar.visibility = if (loading) View.VISIBLE else View.GONE
+            binding.btnLogin.isEnabled = !loading
+            binding.btnForgotPassword.isEnabled = !loading
             when (state) {
                 is AuthState.Success -> findNavController().navigate(R.id.action_login_to_home)
                 is AuthState.PasswordResetSent ->
