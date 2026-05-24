@@ -102,10 +102,16 @@ class FeedViewModel(app: Application) : AndroidViewModel(app) {
     fun loadPosts() {
         _isLoading.value = true
         viewModelScope.launch {
-            runCatching { repository.refreshAllPosts() }
-                .onFailure { android.util.Log.e("FeedViewModel", "loadPosts failed: ${it.message}", it) }
-                .onSuccess { android.util.Log.d("FeedViewModel", "loadPosts succeeded") }
-            _isLoading.postValue(false)
+            try {
+                repository.refreshAllPosts()
+                android.util.Log.d("FeedViewModel", "loadPosts succeeded")
+            } catch (e: Exception) {
+                android.util.Log.e("FeedViewModel", "loadPosts failed: ${e.message}", e)
+            } finally {
+                _isLoading.postValue(false)
+            }
         }
     }
+
+    fun retryLoad() = loadPosts()
 }
