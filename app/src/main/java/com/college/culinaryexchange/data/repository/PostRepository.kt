@@ -73,8 +73,14 @@ class PostRepository(private val postDao: PostDao) {
     }
 
     suspend fun deletePost(postId: String): Result<Unit> = runCatching {
+        require(postId.isNotBlank()) { "postId must not be blank" }
         postsCollection.document(postId).delete().await()
         postDao.deleteById(postId)
+    }
+
+    suspend fun evictUserCache(userId: String) = withContext(Dispatchers.IO) {
+        postDao.deleteByUserId(userId)
+        Log.d(TAG, "evictUserCache: cleared cached posts for uid=$userId")
     }
 
     private suspend fun uploadImage(uri: Uri): String = withContext(Dispatchers.IO) {
