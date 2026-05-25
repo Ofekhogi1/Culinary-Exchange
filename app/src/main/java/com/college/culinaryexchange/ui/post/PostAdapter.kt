@@ -29,7 +29,7 @@ class PostAdapter(
 
         fun bind(post: PostEntity) {
             binding.root.setOnClickListener { onItemClick?.invoke(post) }
-            binding.tvUserName.text = post.userName
+            binding.tvUserName.text = post.userName.ifBlank { "Unknown chef" }
             binding.tvTitle.text = post.title
             binding.tvDescription.text = post.description
             binding.tvTimestamp.text = getRelativeTime(post.timestamp)
