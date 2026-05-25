@@ -59,13 +59,19 @@ class EditProfileFragment : Fragment() {
         }
 
         viewModel.operationResult.observe(viewLifecycleOwner) { result ->
-            result.onSuccess { findNavController().popBackStack() }
-                .onFailure { Toast.makeText(requireContext(), it.message ?: "Error saving profile", Toast.LENGTH_LONG).show() }
+            result ?: return@observe
+            result.onSuccess {
+                viewModel.clearOperationResult()
+                findNavController().popBackStack()
+            }.onFailure {
+                viewModel.clearOperationResult()
+                Toast.makeText(requireContext(), it.message ?: "Error saving profile", Toast.LENGTH_LONG).show()
+            }
         }
 
         binding.btnSave.setOnClickListener {
-            val name = binding.etName.text.toString()
-            val bio = binding.etBio.text.toString()
+            val name = binding.etName.text.toString().trim()
+            val bio = binding.etBio.text.toString().trim()
             if (name.isBlank()) {
                 Toast.makeText(requireContext(), "Name cannot be empty", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
