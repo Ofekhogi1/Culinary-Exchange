@@ -59,6 +59,12 @@ class ProfileFragment : Fragment() {
 
         viewModel.isLoading.observe(viewLifecycleOwner) { loading ->
             binding.progressBar.visibility = if (loading) View.VISIBLE else View.GONE
+            binding.btnLogout.isEnabled = !loading
+        }
+
+        viewModel.error.observe(viewLifecycleOwner) { message ->
+            message ?: return@observe
+            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
         }
 
         viewModel.operationResult.observe(viewLifecycleOwner) { result ->
