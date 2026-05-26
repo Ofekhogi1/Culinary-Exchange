@@ -44,7 +44,6 @@ class MainActivity : AppCompatActivity() {
         navController = navHost.navController
 
         binding.btnNavHome.setOnClickListener { navigateTo(R.id.homeFragment) }
-        binding.btnNavMyPosts.setOnClickListener { navigateTo(R.id.myPostsFragment) }
         binding.btnNavAdd.setOnClickListener { navController.navigate(R.id.addPostFragment) }
         binding.btnNavProfile.setOnClickListener { navigateTo(R.id.profileFragment) }
 
@@ -66,12 +65,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun navigateTo(destinationId: Int) {
         if (navController.currentDestination?.id == destinationId) return
-        navController.navigate(
-            destinationId, null, NavOptions.Builder()
-                .setLaunchSingleTop(true)
-                .setPopUpTo(R.id.homeFragment, false)
-                .build()
-        )
+        navController.navigate(destinationId, null, NavOptions.Builder()
+            .setLaunchSingleTop(true)
+            .setPopUpTo(R.id.homeFragment, false)
+            .build())
     }
 
     private fun updateActiveTab(destinationId: Int) {
@@ -81,10 +78,6 @@ class MainActivity : AppCompatActivity() {
         val homeActive = destinationId == R.id.homeFragment
         binding.ivNavHome.setColorFilter(if (homeActive) active else inactive)
         binding.tvNavHome.setTextColor(if (homeActive) active else inactive)
-
-        val myPostsActive = destinationId == R.id.myPostsFragment
-        binding.ivNavMyPosts.setColorFilter(if (myPostsActive) active else inactive)
-        binding.tvNavMyPosts.setTextColor(if (myPostsActive) active else inactive)
 
         val profileActive = destinationId == R.id.profileFragment
         binding.ivNavProfile.setColorFilter(if (profileActive) active else inactive)
