@@ -53,7 +53,7 @@ class ProfileViewModel(app: Application) : AndroidViewModel(app) {
                 val user = authRepository.getUser(uid)
                 _user.postValue(user)
                 if (user == null) _error.postValue("Could not load profile — check your connection")
-                runCatching { postRepository.refreshAllPosts() }
+                postRepository.refreshUserPosts(uid)
             } catch (e: Exception) {
                 android.util.Log.e("ProfileViewModel", "loadUser failed: ${e.message}", e)
                 _error.postValue(e.message ?: "Unexpected error loading profile")
@@ -72,5 +72,13 @@ class ProfileViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    fun logout() = authRepository.logout()
+    fun logout() {
+        val uid = authRepository.currentUserId
+        authRepository.logout()
+        if (uid != null) {
+            viewModelScope.launch {
+                runCatching { postRepository.evictUserCache(uid) }
+            }
+        }
+    }
 }
