@@ -10,6 +10,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.college.culinaryexchange.data.local.AppDatabase
 import com.college.culinaryexchange.data.local.entity.PostEntity
+import com.college.culinaryexchange.data.repository.AuthRepository
 import com.college.culinaryexchange.data.repository.PostRepository
 import com.college.culinaryexchange.model.Post
 import com.google.firebase.auth.FirebaseAuth
@@ -19,6 +20,8 @@ import kotlinx.coroutines.launch
 class PostViewModel(app: Application) : AndroidViewModel(app) {
 
     private val repository = PostRepository(AppDatabase.getInstance(app).postDao())
+    private val authRepository = AuthRepository()
+
     private val currentUserId: String = FirebaseAuth.getInstance().currentUser?.uid
         ?: run { Log.w("PostViewModel", "No authenticated user"); "" }
 
@@ -66,10 +69,13 @@ class PostViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
+    /**
+     * Creates a new post. The current user's display name is resolved via [AuthRepository]
+     * so the Fragment never needs to touch Firebase directly.
+     */
     fun createPost(
         title: String,
         description: String,
-        userName: String,
         imageUri: Uri?,
         ingredients: List<String> = emptyList(),
         instructions: List<String> = emptyList(),
@@ -84,6 +90,8 @@ class PostViewModel(app: Application) : AndroidViewModel(app) {
         if (currentUserId.isBlank()) return
         _isLoading.value = true
         viewModelScope.launch {
+            val userName = runCatching { authRepository.getUser(currentUserId)?.name }
+                .getOrNull() ?: "Anonymous"
             val post = Post(
                 userId = currentUserId,
                 userName = userName,

@@ -1,18 +1,17 @@
 package com.college.culinaryexchange.ui.feed
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.GravityCompat
-import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
-import android.util.Log
-import androidx.lifecycle.lifecycleScope
 import com.college.culinaryexchange.databinding.FragmentHomeBinding
 import com.college.culinaryexchange.ui.post.PostAdapter
 import com.college.culinaryexchange.util.SeedDataUtil
@@ -24,7 +23,9 @@ class HomeFragment : Fragment() {
     private val binding get() = _binding!!
     private val viewModel: FeedViewModel by viewModels()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -32,10 +33,7 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val quoteAdapter = QuoteAdapter(
-            quote = viewModel.currentQuote.value ?: Quote("", ""),
-            onRefresh = { viewModel.refreshQuote() }
-        )
+        val quoteAdapter = QuoteAdapter(onRefresh = { viewModel.loadMealInspiration() })
         val postAdapter = PostAdapter(
             onItemClick = { post ->
                 val action = HomeFragmentDirections.actionHomeToRecipeDetail(postId = post.id)
@@ -46,8 +44,12 @@ class HomeFragment : Fragment() {
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.adapter = ConcatAdapter(quoteAdapter, postAdapter)
 
-        viewModel.currentQuote.observe(viewLifecycleOwner) { quote ->
-            quoteAdapter.updateQuote(quote)
+        // Observe meal inspiration from TheMealDB REST API
+        viewModel.mealInspiration.observe(viewLifecycleOwner) { meal ->
+            quoteAdapter.updateMeal(meal)
+        }
+        viewModel.isMealLoading.observe(viewLifecycleOwner) { loading ->
+            quoteAdapter.updateLoading(loading)
         }
 
         viewModel.filteredPosts.observe(viewLifecycleOwner) { posts ->
@@ -63,6 +65,9 @@ class HomeFragment : Fragment() {
                 .onFailure { Log.e("HomeFragment", "Seed failed: ${it.message}", it) }
             viewModel.loadPosts()
         }
+
+        // Fetch a random meal from the API on first load
+        viewModel.loadMealInspiration()
 
         // Drawer open/close
         binding.btnOpenFilter.setOnClickListener {

@@ -19,8 +19,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
 
-    private val authFragments = setOf(R.id.loginFragment, R.id.registerFragment)
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -46,8 +44,9 @@ class MainActivity : AppCompatActivity() {
         navController = navHost.navController
 
         binding.btnNavHome.setOnClickListener { navigateTo(R.id.homeFragment) }
-        binding.btnNavProfile.setOnClickListener { navigateTo(R.id.profileFragment) }
+        binding.btnNavMyPosts.setOnClickListener { navigateTo(R.id.myPostsFragment) }
         binding.btnNavAdd.setOnClickListener { navController.navigate(R.id.addPostFragment) }
+        binding.btnNavProfile.setOnClickListener { navigateTo(R.id.profileFragment) }
 
         val noBottomBarFragments = setOf(
             R.id.loginFragment, R.id.registerFragment,
@@ -67,10 +66,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun navigateTo(destinationId: Int) {
         if (navController.currentDestination?.id == destinationId) return
-        navController.navigate(destinationId, null, NavOptions.Builder()
-            .setLaunchSingleTop(true)
-            .setPopUpTo(R.id.homeFragment, false)
-            .build())
+        navController.navigate(
+            destinationId, null, NavOptions.Builder()
+                .setLaunchSingleTop(true)
+                .setPopUpTo(R.id.homeFragment, false)
+                .build()
+        )
     }
 
     private fun updateActiveTab(destinationId: Int) {
@@ -80,6 +81,10 @@ class MainActivity : AppCompatActivity() {
         val homeActive = destinationId == R.id.homeFragment
         binding.ivNavHome.setColorFilter(if (homeActive) active else inactive)
         binding.tvNavHome.setTextColor(if (homeActive) active else inactive)
+
+        val myPostsActive = destinationId == R.id.myPostsFragment
+        binding.ivNavMyPosts.setColorFilter(if (myPostsActive) active else inactive)
+        binding.tvNavMyPosts.setTextColor(if (myPostsActive) active else inactive)
 
         val profileActive = destinationId == R.id.profileFragment
         binding.ivNavProfile.setColorFilter(if (profileActive) active else inactive)

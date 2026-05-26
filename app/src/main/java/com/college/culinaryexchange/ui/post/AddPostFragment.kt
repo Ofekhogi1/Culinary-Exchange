@@ -14,13 +14,11 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.college.culinaryexchange.R
-import com.college.culinaryexchange.util.ImageLoader
 import com.college.culinaryexchange.data.local.entity.PostEntity
 import com.college.culinaryexchange.databinding.FragmentAddPostBinding
 import com.college.culinaryexchange.model.Post
+import com.college.culinaryexchange.util.ImageLoader
 import com.google.android.material.chip.Chip
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
 
 class AddPostFragment : Fragment() {
 
@@ -43,7 +41,9 @@ class AddPostFragment : Fragment() {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View {
         _binding = FragmentAddPostBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -62,34 +62,7 @@ class AddPostFragment : Fragment() {
             viewModel.editPost.observe(viewLifecycleOwner) { post ->
                 post ?: return@observe
                 existingPost = post
-                binding.etTitle.setText(post.title)
-                binding.etDescription.setText(post.description)
-                binding.etPrepTime.setText(if (post.prepTime > 0) post.prepTime.toString() else "")
-                binding.etServings.setText(if (post.servings > 0) post.servings.toString() else "")
-                if (post.imageUrl.isNotBlank()) {
-                    ImageLoader.load(requireContext(), post.imageUrl, binding.ivPostImage)
-                    ImageViewCompat.setImageTintList(binding.ivPostImage, null)
-                }
-                // Category
-                if (post.category.isNotBlank()) {
-                    for (i in 0 until binding.chipGroupCategory.childCount) {
-                        val chip = binding.chipGroupCategory.getChildAt(i) as? Chip
-                        if (chip?.text.toString() == post.category) { chip?.isChecked = true; break }
-                    }
-                }
-                // Nutrition
-                if (post.nutritionCalories > 0) binding.etCalories.setText(post.nutritionCalories.toString())
-                if (post.nutritionProtein.isNotBlank()) binding.etProtein.setText(post.nutritionProtein)
-                if (post.nutritionCarbs.isNotBlank()) binding.etCarbs.setText(post.nutritionCarbs)
-                if (post.nutritionFat.isNotBlank()) binding.etFat.setText(post.nutritionFat)
-
-                ingredients.clear()
-                ingredients.addAll(post.ingredients)
-                post.ingredients.forEach { addIngredientChip(it) }
-
-                instructions.clear()
-                instructions.addAll(post.instructions)
-                post.instructions.forEachIndexed { index, text -> addInstructionStep(index + 1, text) }
+                populateFormForEdit(post)
             }
         }
 
@@ -114,35 +87,78 @@ class AddPostFragment : Fragment() {
             }
         }
 
-        binding.btnSubmit.setOnClickListener {
-            val title = binding.etTitle.text.toString().trim()
-            val description = binding.etDescription.text.toString().trim()
-            val prepTime = binding.etPrepTime.text.toString().trim().toIntOrNull() ?: 0
-            val servings = binding.etServings.text.toString().trim().toIntOrNull() ?: 0
-            val selectedCategoryId = binding.chipGroupCategory.checkedChipId
-            val category = if (selectedCategoryId != -1)
-                binding.chipGroupCategory.findViewById<Chip>(selectedCategoryId)?.text?.toString() ?: "" else ""
-            val calories = binding.etCalories.text.toString().trim().toIntOrNull() ?: 0
-            val protein = binding.etProtein.text.toString().trim()
-            val carbs = binding.etCarbs.text.toString().trim()
-            val fat = binding.etFat.text.toString().trim()
+        binding.btnSubmit.setOnClickListener { onSubmit(isEditMode) }
 
-            if (title.isBlank()) {
-                Toast.makeText(requireContext(), "Title is required", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            if (ingredients.isEmpty()) {
-                Toast.makeText(requireContext(), "Add at least one ingredient", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            if (instructions.isEmpty()) {
-                Toast.makeText(requireContext(), "Add at least one instruction step", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+        viewModel.isLoading.observe(viewLifecycleOwner) { loading ->
+            binding.progressBar.visibility = if (loading) View.VISIBLE else View.GONE
+            binding.btnSubmit.isEnabled = !loading
+        }
 
-            if (isEditMode) {
-                val existing = existingPost ?: return@setOnClickListener
-                val updatedPost = Post(
+        viewModel.operationResult.observe(viewLifecycleOwner) { result ->
+            result.onSuccess { findNavController().popBackStack() }
+                .onFailure { Toast.makeText(requireContext(), it.message, Toast.LENGTH_LONG).show() }
+        }
+    }
+
+    private fun populateFormForEdit(post: PostEntity) {
+        binding.etTitle.setText(post.title)
+        binding.etDescription.setText(post.description)
+        binding.etPrepTime.setText(if (post.prepTime > 0) post.prepTime.toString() else "")
+        binding.etServings.setText(if (post.servings > 0) post.servings.toString() else "")
+
+        if (post.imageUrl.isNotBlank()) {
+            ImageLoader.load(requireContext(), post.imageUrl, binding.ivPostImage)
+            ImageViewCompat.setImageTintList(binding.ivPostImage, null)
+        }
+        if (post.category.isNotBlank()) {
+            for (i in 0 until binding.chipGroupCategory.childCount) {
+                val chip = binding.chipGroupCategory.getChildAt(i) as? Chip
+                if (chip?.text.toString() == post.category) { chip?.isChecked = true; break }
+            }
+        }
+        if (post.nutritionCalories > 0) binding.etCalories.setText(post.nutritionCalories.toString())
+        if (post.nutritionProtein.isNotBlank()) binding.etProtein.setText(post.nutritionProtein)
+        if (post.nutritionCarbs.isNotBlank()) binding.etCarbs.setText(post.nutritionCarbs)
+        if (post.nutritionFat.isNotBlank()) binding.etFat.setText(post.nutritionFat)
+
+        ingredients.clear(); ingredients.addAll(post.ingredients)
+        post.ingredients.forEach { addIngredientChip(it) }
+
+        instructions.clear(); instructions.addAll(post.instructions)
+        post.instructions.forEachIndexed { index, text -> addInstructionStep(index + 1, text) }
+    }
+
+    private fun onSubmit(isEditMode: Boolean) {
+        val title = binding.etTitle.text.toString().trim()
+        val description = binding.etDescription.text.toString().trim()
+        val prepTime = binding.etPrepTime.text.toString().trim().toIntOrNull() ?: 0
+        val servings = binding.etServings.text.toString().trim().toIntOrNull() ?: 0
+        val selectedCategoryId = binding.chipGroupCategory.checkedChipId
+        val category = if (selectedCategoryId != -1)
+            binding.chipGroupCategory.findViewById<Chip>(selectedCategoryId)?.text?.toString() ?: ""
+        else ""
+        val calories = binding.etCalories.text.toString().trim().toIntOrNull() ?: 0
+        val protein = binding.etProtein.text.toString().trim()
+        val carbs = binding.etCarbs.text.toString().trim()
+        val fat = binding.etFat.text.toString().trim()
+
+        if (title.isBlank()) {
+            Toast.makeText(requireContext(), "Title is required", Toast.LENGTH_SHORT).show()
+            return
+        }
+        if (ingredients.isEmpty()) {
+            Toast.makeText(requireContext(), "Add at least one ingredient", Toast.LENGTH_SHORT).show()
+            return
+        }
+        if (instructions.isEmpty()) {
+            Toast.makeText(requireContext(), "Add at least one instruction step", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (isEditMode) {
+            val existing = existingPost ?: return
+            viewModel.updatePost(
+                Post(
                     id = existing.id,
                     userId = existing.userId,
                     userName = existing.userName,
@@ -160,37 +176,25 @@ class AddPostFragment : Fragment() {
                     nutritionProtein = protein,
                     nutritionCarbs = carbs,
                     nutritionFat = fat
-                )
-                viewModel.updatePost(updatedPost, selectedImageUri)
-            } else {
-                resolveUserName { userName ->
-                    viewModel.createPost(
-                        title = title,
-                        description = description,
-                        userName = userName,
-                        imageUri = selectedImageUri,
-                        ingredients = ingredients.toList(),
-                        instructions = instructions.toList(),
-                        prepTime = prepTime,
-                        servings = servings,
-                        category = category,
-                        nutritionCalories = calories,
-                        nutritionProtein = protein,
-                        nutritionCarbs = carbs,
-                        nutritionFat = fat
-                    )
-                }
-            }
-        }
-
-        viewModel.isLoading.observe(viewLifecycleOwner) { loading ->
-            binding.progressBar.visibility = if (loading) View.VISIBLE else View.GONE
-            binding.btnSubmit.isEnabled = !loading
-        }
-
-        viewModel.operationResult.observe(viewLifecycleOwner) { result ->
-            result.onSuccess { findNavController().popBackStack() }
-                .onFailure { Toast.makeText(requireContext(), it.message, Toast.LENGTH_LONG).show() }
+                ),
+                selectedImageUri
+            )
+        } else {
+            // Username is resolved inside PostViewModel via AuthRepository — no Firestore call here
+            viewModel.createPost(
+                title = title,
+                description = description,
+                imageUri = selectedImageUri,
+                ingredients = ingredients.toList(),
+                instructions = instructions.toList(),
+                prepTime = prepTime,
+                servings = servings,
+                category = category,
+                nutritionCalories = calories,
+                nutritionProtein = protein,
+                nutritionCarbs = carbs,
+                nutritionFat = fat
+            )
         }
     }
 
@@ -231,16 +235,6 @@ class AddPostFragment : Fragment() {
             val row = binding.llInstructionSteps.getChildAt(i)
             row.findViewById<android.widget.TextView>(R.id.tvStepNumber)?.text = (i + 1).toString()
         }
-    }
-
-    private fun resolveUserName(onResolved: (String) -> Unit) {
-        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: run {
-            onResolved("Anonymous")
-            return
-        }
-        FirebaseFirestore.getInstance().collection("users").document(uid).get()
-            .addOnSuccessListener { doc -> onResolved(doc.getString("name") ?: "Anonymous") }
-            .addOnFailureListener { onResolved("Anonymous") }
     }
 
     override fun onDestroyView() {
