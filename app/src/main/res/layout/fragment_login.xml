@@ -129,7 +129,19 @@
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
                     android:text="Sign In"
-                    android:layout_marginBottom="16dp" />
+                    android:layout_marginBottom="8dp" />
+
+                <!-- Forgot Password -->
+                <TextView
+                    android:id="@+id/btnForgotPassword"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="Forgot password?"
+                    android:textColor="@color/primary"
+                    android:textSize="14sp"
+                    android:paddingVertical="8dp"
+                    android:layout_marginBottom="8dp" />
 
                 <!-- Toggle link -->
                 <LinearLayout
