@@ -20,6 +20,8 @@ data class MealInspiration(
     val thumbnailUrl: String
 )
 
+data class CulinaryQuote(val text: String, val author: String)
+
 enum class SortOrder { NEWEST_FIRST, OLDEST_FIRST }
 
 class FeedViewModel(app: Application) : AndroidViewModel(app) {
@@ -28,6 +30,25 @@ class FeedViewModel(app: Application) : AndroidViewModel(app) {
 
     companion object {
         private const val MAX_MEAL_RETRIES = 2
+
+        val CULINARY_QUOTES = listOf(
+            CulinaryQuote("Cooking is an art, but all art requires knowing something about the techniques and materials.", "Nathan Myhrvold"),
+            CulinaryQuote("First we eat, then we do everything else.", "M.F.K. Fisher"),
+            CulinaryQuote("The secret ingredient is always love.", "Unknown"),
+            CulinaryQuote("People who love to eat are always the best people.", "Julia Child"),
+            CulinaryQuote("A recipe has no soul. You, as the cook, must bring soul to the recipe.", "Thomas Keller"),
+            CulinaryQuote("Food is our common ground, a universal experience.", "James Beard"),
+            CulinaryQuote("Life is uncertain. Eat dessert first.", "Ernestine Ulmer")
+        )
+    }
+
+    private var quoteIndex = 0
+    private val _currentQuote = MutableLiveData(CULINARY_QUOTES[quoteIndex])
+    val currentQuote: LiveData<CulinaryQuote> = _currentQuote
+
+    fun refreshQuote() {
+        quoteIndex = (quoteIndex + 1) % CULINARY_QUOTES.size
+        _currentQuote.value = CULINARY_QUOTES[quoteIndex]
     }
 
     private val _allPosts: LiveData<List<PostEntity>> = repository.getAllPostsFromCache().asLiveData()

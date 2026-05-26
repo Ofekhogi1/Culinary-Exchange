@@ -64,11 +64,11 @@ class PostAdapter(
             return when {
                 diff < TimeUnit.MINUTES.toMillis(1) -> "just now"
                 diff < TimeUnit.HOURS.toMillis(1) -> "${TimeUnit.MILLISECONDS.toMinutes(diff)} min ago"
-                diff < TimeUnit.DAYS.toMillis(1) -> "${TimeUnit.MILLISECONDS.toHours(diff)}h ago"
-                diff < TimeUnit.DAYS.toMillis(7) -> "${days}d ago"
-                diff < TimeUnit.DAYS.toMillis(30) -> "${days / 7}w ago"
-                diff < TimeUnit.DAYS.toMillis(365) -> "${days / 30}mo ago"
-                else -> "${days / 365}y ago"
+                diff < TimeUnit.DAYS.toMillis(1) -> "${TimeUnit.MILLISECONDS.toHours(diff)} hours ago"
+                diff < TimeUnit.DAYS.toMillis(7) -> "$days days ago"
+                diff < TimeUnit.DAYS.toMillis(30) -> "${days / 7} weeks ago"
+                diff < TimeUnit.DAYS.toMillis(365) -> "${days / 30} months ago"
+                else -> "${days / 365} years ago"
             }
         }
 
