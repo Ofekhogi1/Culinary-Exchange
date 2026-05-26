@@ -56,6 +56,8 @@ class EditProfileFragment : Fragment() {
         viewModel.isLoading.observe(viewLifecycleOwner) { loading ->
             binding.progressBar.visibility = if (loading) View.VISIBLE else View.GONE
             binding.btnSave.isEnabled = !loading
+            binding.btnBack.isEnabled = !loading
+            binding.ivCameraBtn.isEnabled = !loading
         }
 
         viewModel.operationResult.observe(viewLifecycleOwner) { result ->
