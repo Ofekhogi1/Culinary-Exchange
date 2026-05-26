@@ -17,9 +17,19 @@ class RecipeDetailViewModel(app: Application) : AndroidViewModel(app) {
     private val _post = MutableLiveData<PostEntity?>()
     val post: LiveData<PostEntity?> = _post
 
+    private val _notFound = MutableLiveData(false)
+    val notFound: LiveData<Boolean> = _notFound
+
     fun loadPost(postId: String) {
+        if (postId.isBlank()) {
+            _notFound.value = true
+            return
+        }
         viewModelScope.launch {
-            repository.getPostById(postId).collect { _post.postValue(it) }
+            repository.getPostById(postId).collect { entity ->
+                if (entity == null) _notFound.postValue(true)
+                else _post.postValue(entity)
+            }
         }
     }
 }

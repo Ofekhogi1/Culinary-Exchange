@@ -64,8 +64,13 @@ class PostViewModel(app: Application) : AndroidViewModel(app) {
         if (currentUserId.isBlank()) return
         _isLoading.value = true
         viewModelScope.launch {
-            runCatching { repository.refreshAllPosts() }
-            _isLoading.postValue(false)
+            try {
+                repository.refreshUserPosts(currentUserId)
+            } catch (e: Exception) {
+                Log.e("PostViewModel", "loadUserPosts failed: ${e.message}", e)
+            } finally {
+                _isLoading.postValue(false)
+            }
         }
     }
 

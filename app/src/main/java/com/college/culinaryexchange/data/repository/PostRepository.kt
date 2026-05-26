@@ -30,7 +30,7 @@ class PostRepository(private val postDao: PostDao) {
 
     fun getUserPostCount(userId: String): Flow<Int> = postDao.getPostCountByUser(userId)
 
-    suspend fun refreshAllPosts() {
+    suspend fun refreshAllPosts() = withContext(Dispatchers.IO) {
         Log.d(TAG, "refreshAllPosts: starting")
         try {
             val snapshot = postsCollection
@@ -45,6 +45,17 @@ class PostRepository(private val postDao: PostDao) {
             Log.e(TAG, "refreshAllPosts: FAILED: ${e::class.simpleName}: ${e.message}", e)
             throw e
         }
+    }
+
+    suspend fun refreshUserPosts(userId: String) = withContext(Dispatchers.IO) {
+        Log.d(TAG, "refreshUserPosts: uid=$userId")
+        val snapshot = postsCollection
+            .whereEqualTo("userId", userId)
+            .orderBy("timestamp", com.google.firebase.firestore.Query.Direction.DESCENDING)
+            .get().await()
+        val posts = snapshot.toObjects(Post::class.java)
+        postDao.upsertAll(posts.map { it.toEntity() })
+        Log.d(TAG, "refreshUserPosts: cached ${posts.size} posts for user")
     }
 
     suspend fun createPost(post: Post, imageUri: Uri?): Result<Unit> = runCatching {
@@ -62,8 +73,14 @@ class PostRepository(private val postDao: PostDao) {
     }
 
     suspend fun deletePost(postId: String): Result<Unit> = runCatching {
+        require(postId.isNotBlank()) { "postId must not be blank" }
         postsCollection.document(postId).delete().await()
         postDao.deleteById(postId)
+    }
+
+    suspend fun evictUserCache(userId: String) = withContext(Dispatchers.IO) {
+        postDao.deleteByUserId(userId)
+        Log.d(TAG, "evictUserCache: cleared cached posts for uid=$userId")
     }
 
     private suspend fun uploadImage(uri: Uri): String = withContext(Dispatchers.IO) {
@@ -95,12 +112,22 @@ class PostRepository(private val postDao: PostDao) {
     }
 
     private fun Post.toEntity() = PostEntity(
-        id = id, userId = userId, userName = userName,
-        userAvatarUrl = userAvatarUrl, title = title,
-        description = description, imageUrl = imageUrl, timestamp = timestamp,
-        ingredients = ingredients, instructions = instructions,
-        prepTime = prepTime, servings = servings, category = category,
-        nutritionCalories = nutritionCalories, nutritionProtein = nutritionProtein,
-        nutritionCarbs = nutritionCarbs, nutritionFat = nutritionFat
+        id = id.ifBlank { throw IllegalArgumentException("Post.id must not be blank") },
+        userId = userId,
+        userName = userName,
+        userAvatarUrl = userAvatarUrl.orEmpty(),
+        title = title.trim(),
+        description = description.trim(),
+        imageUrl = imageUrl.orEmpty(),
+        timestamp = timestamp,
+        ingredients = ingredients,
+        instructions = instructions,
+        prepTime = prepTime,
+        servings = servings,
+        category = category.trim(),
+        nutritionCalories = nutritionCalories,
+        nutritionProtein = nutritionProtein.orEmpty(),
+        nutritionCarbs = nutritionCarbs.orEmpty(),
+        nutritionFat = nutritionFat.orEmpty()
     )
 }
