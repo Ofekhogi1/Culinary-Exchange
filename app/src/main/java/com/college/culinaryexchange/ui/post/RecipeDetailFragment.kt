@@ -33,6 +33,15 @@ class RecipeDetailFragment : Fragment() {
         binding.btnBack.setOnClickListener { findNavController().popBackStack() }
         viewModel.loadPost(args.postId)
 
+        viewModel.notFound.observe(viewLifecycleOwner) { missing ->
+            if (missing) {
+                android.widget.Toast.makeText(
+                    requireContext(), "Recipe not found", android.widget.Toast.LENGTH_SHORT
+                ).show()
+                findNavController().popBackStack()
+            }
+        }
+
         viewModel.post.observe(viewLifecycleOwner) { post ->
             post ?: return@observe
 

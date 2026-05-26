@@ -45,12 +45,26 @@ class ProfileViewModel(app: Application) : AndroidViewModel(app) {
         val uid = authRepository.currentUserId ?: return
         _isLoading.value = true
         viewModelScope.launch {
-            runCatching { authRepository.getUser(uid) }
-                .onSuccess { _user.postValue(it) }
-            runCatching { postRepository.refreshAllPosts() }
-            _isLoading.postValue(false)
+            try {
+                val user = authRepository.getUser(uid)
+                _user.postValue(user)
+                postRepository.refreshUserPosts(uid)
+            } catch (e: Exception) {
+                android.util.Log.e("ProfileViewModel", "loadUser failed: ${e.message}", e)
+                _operationResult.postValue(Result.failure(e))
+            } finally {
+                _isLoading.postValue(false)
+            }
         }
     }
 
-    fun logout() = authRepository.logout()
+    fun logout() {
+        val uid = authRepository.currentUserId
+        authRepository.logout()
+        if (uid != null) {
+            viewModelScope.launch {
+                runCatching { postRepository.evictUserCache(uid) }
+            }
+        }
+    }
 }
