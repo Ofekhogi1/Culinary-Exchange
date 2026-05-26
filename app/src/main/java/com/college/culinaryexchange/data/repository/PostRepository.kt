@@ -49,9 +49,11 @@ class PostRepository(private val postDao: PostDao) {
 
     suspend fun refreshUserPosts(userId: String) = withContext(Dispatchers.IO) {
         Log.d(TAG, "refreshUserPosts: uid=$userId")
+        // No orderBy here — combining whereEqualTo + orderBy on different fields
+        // requires a composite Firestore index. Room's getPostsByUser() already
+        // returns rows ordered by timestamp DESC, so sorting here is redundant.
         val snapshot = postsCollection
             .whereEqualTo("userId", userId)
-            .orderBy("timestamp", com.google.firebase.firestore.Query.Direction.DESCENDING)
             .get().await()
         val posts = snapshot.toObjects(Post::class.java)
         postDao.upsertAll(posts.map { it.toEntity() })
