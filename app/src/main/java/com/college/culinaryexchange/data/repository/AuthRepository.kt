@@ -19,6 +19,8 @@ class AuthRepository {
     private val db = FirebaseFirestore.getInstance()
 
     val currentUserId: String? get() = auth.currentUser?.uid
+    val isLoggedIn: Boolean get() = auth.currentUser != null
+    val currentUserEmail: String? get() = auth.currentUser?.email
 
     suspend fun login(email: String, password: String): Result<Unit> = runCatching {
         auth.signInWithEmailAndPassword(email, password).await()
@@ -39,8 +41,12 @@ class AuthRepository {
             }
     }
 
-    suspend fun getUser(uid: String): User? =
+    suspend fun getUser(uid: String): User? = try {
         db.collection("users").document(uid).get().await().toObject(User::class.java)
+    } catch (e: Exception) {
+        android.util.Log.w(TAG, "getUser($uid) failed — device may be offline: ${e.message}")
+        null
+    }
 
     suspend fun updateUser(user: User): Result<Unit> = runCatching {
         db.collection("users").document(user.id).set(user).await()
@@ -59,4 +65,8 @@ class AuthRepository {
     }
 
     fun logout() = auth.signOut()
+
+    companion object {
+        private const val TAG = "AuthRepository"
+    }
 }

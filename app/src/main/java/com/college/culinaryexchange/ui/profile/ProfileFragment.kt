@@ -41,8 +41,8 @@ class ProfileFragment : Fragment() {
 
         viewModel.user.observe(viewLifecycleOwner) { user ->
             user ?: return@observe
-            binding.tvName.text = user.name.orEmpty()
-            binding.tvEmail.text = user.email.orEmpty()
+            binding.tvName.text = user.name.ifNullOrBlank("—")
+            binding.tvEmail.text = user.email.ifNullOrBlank("—")
             val avatar = user.avatarUrl.orEmpty()
             if (avatar.isNotBlank()) {
                 ImageLoader.loadCircle(requireContext(), avatar, binding.ivAvatar)
@@ -59,6 +59,12 @@ class ProfileFragment : Fragment() {
 
         viewModel.isLoading.observe(viewLifecycleOwner) { loading ->
             binding.progressBar.visibility = if (loading) View.VISIBLE else View.GONE
+            binding.btnLogout.isEnabled = !loading
+        }
+
+        viewModel.error.observe(viewLifecycleOwner) { message ->
+            message ?: return@observe
+            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
         }
 
         viewModel.operationResult.observe(viewLifecycleOwner) { result ->
@@ -85,4 +91,7 @@ class ProfileFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
+    private fun String?.ifNullOrBlank(default: String) =
+        if (this.isNullOrBlank()) default else this
 }

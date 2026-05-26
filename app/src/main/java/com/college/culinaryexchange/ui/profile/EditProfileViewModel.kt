@@ -34,6 +34,11 @@ class EditProfileViewModel(app: Application) : AndroidViewModel(app) {
 
     fun saveUser(name: String, bio: String, avatarUri: Uri?) {
         val uid = repository.currentUserId ?: return
+        val trimmedName = name.trim()
+        if (trimmedName.length < 2 || trimmedName.length > 50) {
+            _operationResult.postValue(Result.failure(IllegalArgumentException("Name must be 2–50 characters")))
+            return
+        }
         _isLoading.value = true
         viewModelScope.launch {
             val existingUrl = _user.value?.avatarUrl.orEmpty()
@@ -47,11 +52,13 @@ class EditProfileViewModel(app: Application) : AndroidViewModel(app) {
                 upload.getOrThrow()
             } else existingUrl
             val current = _user.value ?: User(id = uid)
-            val updated = current.copy(name = name.trim(), bio = bio.trim(), avatarUrl = avatarUrl)
+            val updated = current.copy(name = trimmedName, bio = bio.trim(), avatarUrl = avatarUrl)
             val result = repository.updateUser(updated)
             _user.postValue(updated)
             _operationResult.postValue(result)
             _isLoading.postValue(false)
         }
     }
+
+    fun clearOperationResult() { _operationResult.value = null }
 }
