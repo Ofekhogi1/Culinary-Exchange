@@ -9,7 +9,7 @@ import com.college.culinaryexchange.data.local.converter.Converters
 import com.college.culinaryexchange.data.local.dao.PostDao
 import com.college.culinaryexchange.data.local.entity.PostEntity
 
-@Database(entities = [PostEntity::class], version = 2, exportSchema = true)
+@Database(entities = [PostEntity::class], version = DB_VERSION, exportSchema = true)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
 
@@ -23,8 +23,16 @@ abstract class AppDatabase : RoomDatabase() {
                 INSTANCE ?: Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
-                    "culinary_exchange.db"
-                ).fallbackToDestructiveMigration(true).build().also { INSTANCE = it }
+                    DB_NAME
+                )
+                // TODO: replace destructive migration with a proper Migration object
+                // before shipping to production.
+                .fallbackToDestructiveMigration(true)
+                .build()
+                .also { INSTANCE = it }
             }
     }
 }
+
+private const val DB_VERSION = 2
+private const val DB_NAME = "culinary_exchange.db"
