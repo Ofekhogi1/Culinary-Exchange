@@ -26,6 +26,9 @@ class ProfileViewModel(app: Application) : AndroidViewModel(app) {
     private val _isLoading = MutableLiveData(false)
     val isLoading: LiveData<Boolean> = _isLoading
 
+    private val _error = MutableLiveData<String?>()
+    val error: LiveData<String?> = _error
+
     private val _operationResult = MutableLiveData<Result<Unit>>()
     val operationResult: LiveData<Result<Unit>> = _operationResult
 
@@ -43,18 +46,29 @@ class ProfileViewModel(app: Application) : AndroidViewModel(app) {
 
     fun loadUser() {
         val uid = authRepository.currentUserId ?: return
+        if (_isLoading.value == true) return
         _isLoading.value = true
         viewModelScope.launch {
             try {
                 val user = authRepository.getUser(uid)
                 _user.postValue(user)
+                if (user == null) _error.postValue("Could not load profile — check your connection")
                 postRepository.refreshUserPosts(uid)
             } catch (e: Exception) {
                 android.util.Log.e("ProfileViewModel", "loadUser failed: ${e.message}", e)
-                _operationResult.postValue(Result.failure(e))
+                _error.postValue(e.message ?: "Unexpected error loading profile")
             } finally {
                 _isLoading.postValue(false)
             }
+        }
+    }
+
+    fun refreshUser() {
+        val uid = authRepository.currentUserId ?: return
+        viewModelScope.launch {
+            runCatching { authRepository.getUser(uid) }
+                .onSuccess { _user.postValue(it) }
+                .onFailure { _error.postValue("Refresh failed: ${it.message}") }
         }
     }
 
