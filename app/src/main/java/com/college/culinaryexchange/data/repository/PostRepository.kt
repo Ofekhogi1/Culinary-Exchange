@@ -112,12 +112,22 @@ class PostRepository(private val postDao: PostDao) {
     }
 
     private fun Post.toEntity() = PostEntity(
-        id = id, userId = userId, userName = userName,
-        userAvatarUrl = userAvatarUrl, title = title,
-        description = description, imageUrl = imageUrl, timestamp = timestamp,
-        ingredients = ingredients, instructions = instructions,
-        prepTime = prepTime, servings = servings, category = category,
-        nutritionCalories = nutritionCalories, nutritionProtein = nutritionProtein,
-        nutritionCarbs = nutritionCarbs, nutritionFat = nutritionFat
+        id = id.ifBlank { throw IllegalArgumentException("Post.id must not be blank") },
+        userId = userId,
+        userName = userName,
+        userAvatarUrl = userAvatarUrl.orEmpty(),
+        title = title.trim(),
+        description = description.trim(),
+        imageUrl = imageUrl.orEmpty(),
+        timestamp = timestamp,
+        ingredients = ingredients,
+        instructions = instructions,
+        prepTime = prepTime,
+        servings = servings,
+        category = category.trim(),
+        nutritionCalories = nutritionCalories,
+        nutritionProtein = nutritionProtein.orEmpty(),
+        nutritionCarbs = nutritionCarbs.orEmpty(),
+        nutritionFat = nutritionFat.orEmpty()
     )
 }
